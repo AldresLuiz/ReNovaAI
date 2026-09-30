@@ -10,3 +10,8 @@ export const authRegisterDTO = z.object({
     email: z.email(),
     password: z.string().min(8).max(72)
 })
+
+export const authMiddlewareDTO = z.object({
+    userId: z.uuid(),
+    role: z.int()
+})
