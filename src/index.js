@@ -13,6 +13,6 @@ app.use((req, res, next)=>{
 //Adicionar Controllers aqui
 app.use(authController)
 
-app.listen(number(process.env.PORT), ()=>{
+app.listen(Number(process.env.PORT), ()=>{
     console.log(`Servidor iniciado em http://localhost:${process.env.PORT}`)
 })

@@ -9,7 +9,7 @@ router.post("/auth/register", (req, res)=>{
     if(!data.success) return res.status(403).json(JSON.parse(data.error.message))
 
     const {name, email, password} = data.data
-    // registerUser()
+    return registerUser(res, name, email, password)
 })
 
 router.post("/auth/login", (req, res)=>{
@@ -17,11 +17,12 @@ router.post("/auth/login", (req, res)=>{
     if(!data.success) return res.status(403).json(JSON.parse(data.error.message))
 
     const {email, password} = data.data
-    // loginUser()
+    return loginUser(res, email, password)
 })
 
-router.post("/auth/logout", (req, res)=>{
-    
+router.get("/auth/logout", (req, res)=>{
+    res.clearCookie("access")
+    return res.status(200).json({message: "Logout efetuado com sucesso"})
 })
 
 export default router
