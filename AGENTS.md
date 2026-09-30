@@ -181,6 +181,7 @@ Pasta `renovaai-front/`: `index.html` (busca e atalhos), `residuo.html` (`?id=8`
 - **Não invente dados**: pontos, horários e orientações vêm do banco; o que for chute fica marcado como exemplo.
 - **Sem credenciais no código nem no front**; use variáveis de ambiente no backend. (Atenção: o `.env.example` atual contém um `JWT_SECRET`; não reutilize em produção.)
 - Ao terminar uma tarefa, diga o que foi feito e o que **não** foi testado.
+- O andamento é acompanhado no Trello (https://trello.com/b/wgU7lkEn/renovaai-hackathon); regras em [docs/guia-trello.md](docs/guia-trello.md). Se o Trello divergir deste arquivo, **vale o repositório**.
 
 ## 14. Por pessoa (para o Claude Code de cada um)
 

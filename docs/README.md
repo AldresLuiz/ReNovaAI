@@ -10,6 +10,7 @@ Comece pelo [AGENTS.md](../AGENTS.md) na raiz (escopo, decisões, regras de neg�
 | [guia-frontend.md](guia-frontend.md) | Bernardo, Carlos | Telas, mocks, mapa e acessibilidade |
 | [guia-deploy.md](guia-deploy.md) | Aldres | Variáveis de ambiente, Render, Vercel, Supabase |
 | [guia-git.md](guia-git.md) | Todos | Branches, commits e como avisar mudanças |
+| [guia-trello.md](guia-trello.md) | Todos | Listas, etiquetas e fluxo do quadro do Trello |
 
 ## Rodar localmente
 
