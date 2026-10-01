@@ -27,7 +27,32 @@ const upload = multer({
 router.post(
     "/classify",
     upload.single("image"),
-    classifyWasteImage
+    async (req, res)=>{
+        try {
+            if (!req.file) {
+                return res.status(400).json({
+                    message: "Nenhuma imagem enviada."
+                });
+            }
+
+            const result = await classifyWasteImage(
+                req.file.buffer,
+                req.file.mimetype
+            );
+
+            return res.status(200).json({
+                message: "Resíduo identificado com sucesso.",
+                data: result
+            });
+
+        } catch (error) {
+            console.error("[WASTE_CLASSIFICATION]", error);
+
+            return res.status(500).json({
+                message: "Erro ao classificar resíduo."
+            });
+        }
+    }
 );
 
 export default router
