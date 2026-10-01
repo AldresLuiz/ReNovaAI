@@ -112,11 +112,5 @@ export async function classifyWasteImage(imageBuffer, mimeType) {
         throw new Error("O modelo não retornou uma classificação.");
     }
 
-    const result = JSON.parse(responseText);
-
-    if (!WASTE_TYPES.includes(result.type)) {
-        throw new Error("O modelo retornou uma categoria inválida.");
-    }
-
-    return result
+    return responseText
 }
