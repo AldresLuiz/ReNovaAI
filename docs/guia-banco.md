@@ -11,9 +11,10 @@ Em `migrations/`:
 | `init_db.sql` | Autenticação (tabela `users`) |
 | `02_schema_residuos.sql` | Extensões, as 6 tabelas e RLS. Sem dados |
 | `03_seed_residuos.sql` | Configurações, categorias, resíduos e sinônimos |
-| `04_seed_pontos_reais.sql` | (a criar) Pontos de coleta reais |
+| `04_funcoes_busca.sql` | Funções `distancia_km`, `buscar_residuos` e `pontos_proximos` |
+| `05_seed_pontos_reais.sql` | (a criar) Pontos de coleta reais |
 
-Os arquivos são **seguros para produção**: não têm `drop`, rodam dentro de `begin/commit` e podem rodar de novo sem duplicar (`create ... if not exists` e `on conflict do nothing`). Depois de aplicado em produção, **não edite** um arquivo: qualquer mudança vira um arquivo novo com número maior (`05_...`).
+Os arquivos são **seguros para produção**: não têm `drop`, rodam dentro de `begin/commit` e podem rodar de novo sem duplicar (`create ... if not exists` e `on conflict do nothing`). Depois de aplicado em produção, **não edite** um arquivo: qualquer mudança vira um arquivo novo com número maior (`06_...`).
 
 ### Como aplicar
 
@@ -31,7 +32,7 @@ create extension if not exists pg_trgm with schema extensions;
 create extension if not exists unaccent with schema extensions;
 ```
 
-Por isso, nas funções, chame `extensions.unaccent(...)` e `extensions.similarity(...)` (ou ajuste o `search_path`).
+Por isso, as funções que usam `unaccent` e `similarity` declaram `set search_path = public, extensions` (veja `04_funcoes_busca.sql`).
 
 ## Tabelas
 
@@ -50,6 +51,8 @@ Por isso, nas funções, chame `extensions.unaccent(...)` e `extensions.similari
 
 Os raios vêm de `configuracoes` (`raio_inicial_km`, `raio_ampliado_km`).
 
+Como `buscar_residuos` decide: o texto digitado é normalizado (sem acento, minúsculas); cada resíduo ganha a **maior** pontuação entre o nome e os sinônimos (1 se o texto contém o termo, senão a similaridade do `pg_trgm`); só entram pontuações a partir de **0,25** e termos com pelo menos 2 letras. Em `pontos_proximos`, quando nada está dentro de 25 km, `raio_usado = 'mais_proximo'` devolve **só o ponto mais perto**.
+
 ## Testes rápidos
 
 ```sql
@@ -62,8 +65,8 @@ Esperado: "latinha" acha "Lata de alumínio"; "pilah" acha pilhas. Como o seed e
 
 ## Dados: o que exige cuidado
 
-- **Resíduos entram com `ativo = false` e texto `RASCUNHO:`.** Só aparecem para o público depois de conferidos com fonte oficial (prefeitura, Ministério do Meio Ambiente), sobretudo **pilhas, lâmpadas e medicamentos**. Para liberar: corrigir o texto (tirar o `RASCUNHO:`), registrar a fonte e rodar `update residuos set ativo = true where nome = '...';`. Como o `03` não se edita depois de aplicado, a correção entra num arquivo novo (ex.: `05_liberar_residuos.sql`).
-- **O seed não tem pontos de coleta**, nem fictícios. **Não invente pontos.** Os 10 a 15 reais entram em `04_seed_pontos_reais.sql`, com `verificado = true` só nos confirmados e `on conflict (nome, endereco) do nothing`.
+- **Resíduos entram com `ativo = false` e texto `RASCUNHO:`.** Só aparecem para o público depois de conferidos com fonte oficial (prefeitura, Ministério do Meio Ambiente), sobretudo **pilhas, lâmpadas e medicamentos**. Para liberar: corrigir o texto (tirar o `RASCUNHO:`), registrar a fonte e rodar `update residuos set ativo = true where nome = '...';`. Como o `03` não se edita depois de aplicado, a correção entra num arquivo novo (ex.: `06_liberar_residuos.sql`).
+- **O seed não tem pontos de coleta**, nem fictícios. **Não invente pontos.** Os 10 a 15 reais entram em `05_seed_pontos_reais.sql`, com `verificado = true` só nos confirmados e `on conflict (nome, endereco) do nothing`.
 - `ponto_residuo` deve refletir o que cada ponto realmente aceita (não ligar tudo a tudo). Busque os ids pelo nome, sem fixar números.
 - Horário desconhecido: `null` (o front mostra "horário não disponível").
 - Para todo resíduo com `risco = true`, preencher `cuidados`.
