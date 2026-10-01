@@ -7,8 +7,8 @@ import { erroMiddleware, rotaNaoEncontrada } from "./middleware/erroMiddleware.j
 
 const app = express()
 
-app.use(corsMiddleware)          // antes de tudo
-app.use(express.json())          // sem isso req.body vem vazio
+app.use(express.static("renovaai-front"))
+app.use(express.json())
 app.use(cookieParser())
 app.use((req, res, next)=>{
     // req.path em vez de originalUrl: não loga lat/lng do usuário (RNF07)
