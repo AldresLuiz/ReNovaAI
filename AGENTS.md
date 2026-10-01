@@ -105,7 +105,7 @@ Os arquivos de `migrations/` são seguros para produção: sem `drop`, em transa
 
 Funções SQL (chamar do backend, **não reimplementar em JS**): `buscar_residuos(q, limite default 8)`, `pontos_proximos(p_residuo, p_lat, p_lng)` (retorna `distancia_km` e `raio_usado`: `inicial` | `ampliado` | `mais_proximo`), `distancia_km(lat1, lng1, lat2, lng2)`.
 
-**Pendências de dados:** o seed (`03_seed_residuos.sql`) **não tem pontos de coleta**; os 10 a 15 reais entram em `04_seed_pontos_reais.sql`, com `verificado = true` só nos confirmados e `ponto_residuo` refletindo o que cada ponto aceita. Os resíduos do seed entram com `ativo = false` e texto `RASCUNHO:`; as orientações **precisam de fonte oficial** (prefeitura, Ministério do Meio Ambiente), sobretudo pilhas, lâmpadas e medicamentos, e só depois são liberadas (`ativo = true`).
+**Pendências de dados:** o seed (`03_seed_residuos.sql`) **não tem pontos de coleta**; os 10 a 15 reais entram em `05_seed_pontos_reais.sql`, com `verificado = true` só nos confirmados e `ponto_residuo` refletindo o que cada ponto aceita. Os resíduos do seed entram com `ativo = false` e texto `RASCUNHO:`; as orientações **precisam de fonte oficial** (prefeitura, Ministério do Meio Ambiente), sobretudo pilhas, lâmpadas e medicamentos, e só depois são liberadas (`ativo = true`).
 
 ## 7. Contrato da API (resumo; detalhes em [docs/contrato-api.md](docs/contrato-api.md))
 
