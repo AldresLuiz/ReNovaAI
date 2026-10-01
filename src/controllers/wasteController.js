@@ -27,7 +27,7 @@ const upload = multer({
 router.post(
     "/classify",
     upload.single("image"),
-    classifyWaste
+    classifyWasteImage
 );
 
 export default router
