@@ -10,7 +10,7 @@ Node + Express 5, ESM (`import`/`export`), porta via `PORT`. Código em `src/`.
 | `datamodels/` | Schemas `zod` / DTOs de entrada e saída |
 | `services/` | Regras e acesso ao banco (`databaseService.js` expõe o `pool` e `transaction`) |
 | `middleware/` | CORS, tratamento de erro, autenticação (só onde necessário) |
-| `routes/` | Agrupamento de rotas `/api/*` |
+| `routes/` | Vazia e reservada: as rotas `/api/*` ficam em `controllers/` |
 
 Ver `src/controllers/authController.js` e `src/services/authService.js` como exemplo de estilo.
 
