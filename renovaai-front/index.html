@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ReNovaAI – Descarte o lixo do jeito certo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="pular" href="#busca">Ir para a busca</a>
+
+  <header class="topo">
+    <a class="logo" href="index.html">ReNovaAI</a>
+  </header>
+
+  <main>
+    <!-- 1) Busca: a ação principal da página -->
+    <section class="busca" id="busca">
+      <h1>O que você quer descartar?</h1>
+      <p>Digite o nome do item e veja como e onde descartar.</p>
+
+      <form id="form-busca" role="search">
+        <label for="q" class="so-leitor">Nome do item</label>
+        <input
+          id="q"
+          name="q"
+          type="search"
+          placeholder="Ex.: pilha, óleo de cozinha"
+          autocomplete="off"
+          required
+>
+        <button type="submit">Buscar</button>
+      </form>
+    </section>
+
+    <section
+      class="resultados-secao"
+      id="resultados"
+      aria-labelledby="titulo-resultados"
+      hidden
+>
+  <h2 id="titulo-resultados">Resultados</h2>
+
+  <p id="mensagem-resultados" role="status" aria-live="polite"></p>
+
+  <ul id="lista-resultados" class="lista-resultados"></ul>
+</section>
+
+    <!-- 2) Categorias: alternativa para quem não sabe o que digitar -->
+    <section class="categorias-secao" aria-labelledby="titulo-categorias">
+      <h2 id="titulo-categorias">Ou escolha uma categoria</h2>
+      <ul class="categorias" id="lista-categorias"></ul>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <p>Projeto do Hackathon Unifavip · ODS 12 – Consumo e Produção Responsáveis</p>
+  </footer>
+
+<script type= "module" src="js/index.js"></script>
+</body>
+</html>

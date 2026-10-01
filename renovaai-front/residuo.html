@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Como descartar – ReNovaAI</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <a class="pular" href="#conteudo">Ir para o conteúdo</a>
+
+  <header class="topo">
+    <a class="logo" href="index.html">ReNovaAI</a>
+  </header>
+
+  <main id="conteudo" class="pagina-residuo">
+
+    <a class="voltar" href="index.html">← Voltar para a busca</a>
+
+    <section class="cabecalho-residuo">
+      <p id="categoria-residuo"></p>
+      <h1 id="nome-residuo">Carregando...</h1>
+    </section>
+
+    <p
+      id="mensagem-erro-residuo"
+      class="mensagem-erro"
+      role="alert"
+      hidden
+    ></p>
+
+    <div id="conteudo-residuo" hidden>
+
+      <section
+        id="aviso-risco"
+        class="aviso-risco"
+        aria-labelledby="titulo-risco"
+        hidden
+      >
+        <h2 id="titulo-risco">Atenção:</h2>
+        <p id="cuidados-residuo"></p>
+      </section>
+
+      <section class="bloco-orientacao">
+        <h2>Como descartar</h2>
+        <p id="orientacao-residuo"></p>
+      </section>
+
+      <section class="bloco-nao-fazer">
+        <h2>O que não fazer</h2>
+        <p id="nao-fazer-residuo"></p>
+      </section>
+
+    </div>
+
+  </main>
+
+  <footer class="rodape">
+    <p>
+      Projeto do Hackathon Unifavip ·
+      ODS 12 – Consumo e Produção Responsáveis
+    </p>
+  </footer>
+
+  <script type="module" src="js/residuo.js"></script>
+</body>
+</html>
