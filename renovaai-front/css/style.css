@@ -1,0 +1,283 @@
+/* ---------- Variáveis (mude as cores aqui) ---------- */
+:root {
+  --tinta: #10251d;
+  --folha: #0b6b3a;
+  --folha-escura: #084d2a;
+  --fundo: #f5faf6;
+  --borda: #9db8a8;
+  --destaque: #ffd84d;
+}
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+  font-size: 1.125rem; /* 18px: texto grande por padrão */
+  line-height: 1.5;
+  color: var(--tinta);
+  background: var(--fundo);
+}
+
+h1, h2 { line-height: 1.2; margin: 0 0 0.5rem; }
+
+/* Foco visível para quem navega pelo teclado */
+:focus-visible {
+  outline: 4px solid var(--tinta);
+  outline-offset: 3px;
+}
+
+/* Esconde só visualmente, mas leitores de tela ainda leem */
+.so-leitor {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.pular {
+  position: absolute;
+  left: 1rem; top: -4rem;
+  background: var(--destaque);
+  padding: 0.75rem 1rem;
+  z-index: 10;
+}
+.pular:focus { top: 1rem; }
+
+/* ---------- Topo ---------- */
+.topo {
+  padding: 1rem;
+  background: var(--folha);
+}
+.logo {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+  align-items: center;
+}
+
+/* ---------- Busca (o destaque da página) ---------- */
+.busca {
+  background: var(--folha);
+  color: #fff;
+  padding: 1.5rem 1rem 2.5rem;
+  text-align: center;
+}
+.busca h1,
+.busca p {
+  text-align: center;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+#form-busca {
+  display: flex;
+  flex-direction: column; /* celular: um embaixo do outro */
+  gap: 0.75rem;
+  max-width: 40rem;
+}
+
+#form-busca input {
+  min-height: 3.5rem;
+  padding: 0 1rem;
+  font: inherit;
+  color: var(--tinta);
+  background: #fff;
+  border: 3px solid transparent;
+  border-radius: 0.5rem;
+}
+
+#form-busca button {
+  min-height: 3.5rem;
+  font: inherit;
+  font-weight: 700;
+  color: var(--tinta);
+  background: var(--destaque);
+  border: 0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+#form-busca button:hover { background: #ffe37a; }
+
+/* No fundo verde, o foco precisa ser claro */
+.busca :focus-visible { outline-color: #fff; }
+
+/* ---------- Resultados da busca ---------- */
+.resultados-secao {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 0;
+}
+
+.resultados-secao h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+#mensagem-resultados {
+  margin: 0 0 1rem;
+}
+
+.lista-resultados {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+/* ---------- Categorias ---------- */
+.categorias-secao {
+  padding: 2rem 1rem;
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+.categorias-secao h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.categorias {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.categorias .atalho-categoria {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  min-height: 7rem;
+  padding: 0.75rem;
+  text-align: center;
+  font: inherit;
+  font-weight: 700;
+  color: var(--tinta);
+  background: #fff;
+  border: 2px solid var(--borda);
+  border-radius: 0.75rem;
+  cursor: pointer;
+}
+
+.categorias .atalho-categoria span:first-child {
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+.categorias .atalho-categoria:hover {
+  border-color: var(--folha);
+  background: #e9f5ee;
+}
+/* ---------- Página do resíduo ---------- */
+.pagina-residuo {
+  width: 100%;
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.voltar {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-bottom: 1.5rem;
+  color: var(--folha-escura);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.cabecalho-residuo {
+  margin-bottom: 1.5rem;
+}
+
+.cabecalho-residuo h1 {
+  font-size: 2rem;
+}
+
+#categoria-residuo {
+  margin: 0 0 0.25rem;
+  font-weight: 700;
+  color: var(--folha-escura);
+}
+
+/* ---------- Blocos de orientação ---------- */
+.bloco-orientacao,
+.bloco-nao-fazer,
+.aviso-risco {
+  margin-bottom: 1rem;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+}
+
+.bloco-orientacao {
+  background: #fff;
+  border: 2px solid var(--borda);
+}
+
+.bloco-nao-fazer {
+  background: #fff;
+  border: 2px solid var(--tinta);
+}
+
+.bloco-orientacao h2,
+.bloco-nao-fazer h2,
+.aviso-risco h2 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.bloco-orientacao p,
+.bloco-nao-fazer p,
+.aviso-risco p {
+  margin: 0;
+}
+
+/* ---------- Aviso de risco ---------- */
+.aviso-risco {
+  background: var(--destaque);
+  color: var(--tinta);
+  border: 3px solid var(--tinta);
+}
+
+.aviso-risco h2 {
+  font-weight: 700;
+}
+
+/* ---------- Erros ---------- */
+.mensagem-erro {
+  padding: 1rem;
+  background: #fff;
+  border: 3px solid var(--tinta);
+  border-radius: 0.75rem;
+  font-weight: 700;
+}
+
+/* ---------- Rodapé ---------- */
+.rodape {
+  padding: 1.5rem 1rem;
+  font-size: 0.95rem;
+  text-align: center;
+  border-top: 1px solid var(--borda);
+}
+
+/* ---------- Telas maiores (tablet e computador) ---------- */
+@media (min-width: 700px) {
+  .busca { padding: 3rem 2rem 4rem; }
+  .busca h1 { font-size: 2.75rem; }
+  .busca > * { max-width: 60rem; margin-left: auto; margin-right: auto; }
+
+  #form-busca { flex-direction: row; max-width: none; }
+  #form-busca input { flex: 1; }
+  #form-busca button { padding: 0 2rem; }
+
+  .categorias { grid-template-columns: repeat(4, 1fr); }
+}
