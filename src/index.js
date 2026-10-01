@@ -4,6 +4,7 @@ import authController from "./controllers/authController.js"
 
 const app = express()
 
+app.use(express.static("renovaai-front"))
 app.use(express.json())
 app.use(cookieParser())
 app.use((req, res, next)=>{
