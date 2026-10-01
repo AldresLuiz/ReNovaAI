@@ -2,6 +2,8 @@ import express from "express"
 import cookieParser from "cookie-parser"
 import authController from "./controllers/authController.js"
 import geocodificarController from "./controllers/geocodificarController.js"
+import { fileURLToPath } from "url";
+import path from "path";
 import { corsMiddleware } from "./middleware/corsMiddleware.js"
 import { erroMiddleware, rotaNaoEncontrada } from "./middleware/erroMiddleware.js"
 
