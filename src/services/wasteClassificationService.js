@@ -48,7 +48,7 @@ export async function classifyWasteImage(imageBuffer, mimeType) {
                     Classifique utilizando exclusivamente
                     uma destas categorias:
 
-                    ${WASTE_TYPES.join(", ")}
+                    ${WASTE_TYPES.rows.join(", ")}
 
                     Considere o material predominante
                     do objeto apresentado.
