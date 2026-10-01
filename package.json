@@ -19,6 +19,7 @@
     "dev": "docker compose up --build"
   },
   "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.1145.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "express": "^5.2.1",
