@@ -112,5 +112,13 @@ export async function classifyWasteImage(imageBuffer, mimeType) {
         throw new Error("O modelo não retornou uma classificação.");
     }
 
-    return responseText
+    const cleaned = responseText
+        .replace(/^```json\s*/i, "")
+        .replace(/^```\s*/i, "")
+        .replace(/\s*```$/i, "")
+        .trim();
+
+    const result = JSON.parse(cleaned);
+
+    return result
 }
