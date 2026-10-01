@@ -6,7 +6,7 @@ const router = r.Router()
 
 router.post("/auth/register", (req, res)=>{
     const data = authRegisterDTO.safeParse(req.body)
-    if(!data.success) return res.status(403).json(JSON.parse(data.error.message))
+    if(!data.success) return res.status(400).json(JSON.parse(data.error.message))
 
     const {name, email, password} = data.data
     return registerUser(res, name, email, password)
@@ -14,7 +14,7 @@ router.post("/auth/register", (req, res)=>{
 
 router.post("/auth/login", (req, res)=>{
     const data = authLoginDTO.safeParse(req.body)
-    if(!data.success) return res.status(403).json(JSON.parse(data.error.message))
+    if(!data.success) return res.status(400).json(JSON.parse(data.error.message))
 
     const {email, password} = data.data
     return loginUser(res, email, password)
