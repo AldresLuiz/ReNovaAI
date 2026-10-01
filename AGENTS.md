@@ -71,7 +71,7 @@ Frontend ──► Leaflet + OpenStreetMap (mapa, sem chave de API)
 
 - O backend já tem **autenticação** (PR #1 do Aldres: `authController`, JWT, bcrypt, cookies). Ela **não faz parte do fluxo central do MVP**; não exija login nas rotas de resíduos/pontos.
 - O acesso ao banco é via `pg` (`src/services/databaseService.js`), não `supabase.rpc`. Em produção, apontar as variáveis `DB_*` para o Supabase.
-- O `docker-compose` carrega `migrations/` no Postgres em ordem alfabética.
+- O `docker-compose` carrega `migrations/` no Postgres **local** em ordem alfabética, só na primeira criação do volume. No Supabase, os arquivos são aplicados à mão no SQL Editor, um por vez, na ordem do número (veja [docs/guia-banco.md](docs/guia-banco.md)).
 
 ## 5. Estrutura de pastas
 
@@ -94,7 +94,7 @@ ReNovaAI/
 
 ## 6. Modelo de dados
 
-Rodar inteiro (recria do zero em dev, com `drop table ... cascade` no início). Tabelas:
+Os arquivos de `migrations/` são seguros para produção: sem `drop`, em transação e repetíveis. Depois de aplicados, não se editam: mudança vira arquivo novo. Tabelas:
 
 - `categorias(id, nome, icone)`
 - `residuos(id, categoria_id, nome, orientacao_descarte, cuidados, nao_fazer, reciclavel, risco, ativo)`
@@ -105,7 +105,7 @@ Rodar inteiro (recria do zero em dev, com `drop table ... cascade` no início). 
 
 Funções SQL (chamar do backend, **não reimplementar em JS**): `buscar_residuos(q, limite default 8)`, `pontos_proximos(p_residuo, p_lat, p_lng)` (retorna `distancia_km` e `raio_usado`: `inicial` | `ampliado` | `mais_proximo`), `distancia_km(lat1, lng1, lat2, lng2)`.
 
-**Pendências de dados:** pontos de coleta do seed são **fictícios** (trocar por 10 a 15 reais, `verificado = true` só nos confirmados); o seed liga todos os pontos a todos os resíduos (ajustar `ponto_residuo`); orientações de descarte **precisam de fonte oficial** (prefeitura, Ministério do Meio Ambiente), sobretudo pilhas, lâmpadas e medicamentos.
+**Pendências de dados:** o seed (`03_seed_residuos.sql`) **não tem pontos de coleta**; os 10 a 15 reais entram em `04_seed_pontos_reais.sql`, com `verificado = true` só nos confirmados e `ponto_residuo` refletindo o que cada ponto aceita. Os resíduos do seed entram com `ativo = false` e texto `RASCUNHO:`; as orientações **precisam de fonte oficial** (prefeitura, Ministério do Meio Ambiente), sobretudo pilhas, lâmpadas e medicamentos, e só depois são liberadas (`ativo = true`).
 
 ## 7. Contrato da API (resumo; detalhes em [docs/contrato-api.md](docs/contrato-api.md))
 
