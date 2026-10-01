@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { classifyWasteImage } from "../services/wasteClassificationService.js";
+import multer from "multer";
 
 const router = Router()
 
