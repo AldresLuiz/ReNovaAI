@@ -73,4 +73,8 @@ Proxy para o Nominatim. Resposta `{ "lat": -8.28, "lng": -35.97 }`. Não encontr
 
 ## POST /api/identificar-foto
 
-Fase 2, só se sobrar tempo. Recebe imagem e devolve resíduos **sugeridos** (ids do banco). A IA só classifica; a orientação vem de `GET /api/residuos/:id`.
+Fase 2, só se sobrar tempo. Recebe imagem (campo `image`, JPG, PNG ou WebP, até 5 MB) e devolve resíduos **sugeridos** (ids do banco). A IA só classifica; a orientação vem de `GET /api/residuos/:id`.
+
+Erros: sem imagem ou formato inválido `400`; foto maior que 5 MB `413`; falha da IA `500`; todos com `{ "erro": "..." }`.
+
+> **A alinhar:** hoje o sucesso devolve `{ "message": "...", "data": { "type": "<categoria>", "recycle": ["...", "...", "..."] } }`, com a **categoria** e não ids de resíduos. Definir com o time se o código ou o contrato muda.

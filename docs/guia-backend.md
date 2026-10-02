@@ -112,6 +112,11 @@ Para sobrescrever uma variável só no comando: `PORT=3000 node --env-file=.env 
 - **Não duplique a regra de distância em JS.** O controller só chama `buscar_residuos` e `pontos_proximos` com parâmetros `$1, $2, $3`.
 - **Teste sem banco:** troque `pool.query` por uma função falsa num script e suba o `Router` num `express()` à parte. Serve para validar status e formato sem depender do Supabase.
 
-### Pendência conhecida: Bedrock derruba a API se o banco falhar
+### Bedrock: o que foi corrigido e o que falta (02/10)
 
-`src/services/wasteClassificationService.js` faz `await pool.query("SELECT nome FROM categorias")` **no carregamento do módulo**. Se o banco estiver fora do ar ou a senha estiver errada, o servidor **não sobe**, nem para as rotas de resíduos. Isso quebra a regra "Bedrock é opcional e isolado". Correção sugerida: carregar essas categorias só dentro de `classifyWasteImage` (com cache), para a falha ficar restrita a `/classify`. Dono: Aldres. Além disso, a rota hoje é `POST /classify`, e o contrato diz `POST /api/identificar-foto`: alinhar uma das duas.
+- **Corrigido: a rota agora é `POST /api/identificar-foto`**, como no contrato (antes era `/classify`).
+- **Corrigido: o Bedrock não derruba mais a API.** `wasteClassificationService.js` consultava o banco **no carregamento do módulo**; com o banco fora do ar ou a senha errada, o servidor nem subia, nem para as rotas de resíduos. Agora as categorias são lidas só quando a rota de foto é usada (com cache, e sem guardar a falha). Testado: com a senha do banco errada a API sobe, `/api/identificar-foto` responde, e só as rotas que usam o banco devolvem `500`.
+- **Corrigido: o prompt do modelo listava as categorias como `[object Object]`.** Era `rows.join(", ")` sobre objetos `{ nome }`; agora lista os nomes.
+- **Corrigido: os erros da rota de foto seguem o contrato** (`{ "erro": "..." }`): sem imagem = `400`, formato que não seja JPG/PNG/WebP = `400`, foto maior que 5 MB = `413`, campo com nome errado = `400` (o campo certo é `image`), falha da IA ou do banco = `500` genérico. Antes vinham como `{ message }` e o formato inválido virava `500`. Testado com `curl -F`.
+- **Ainda diverge do contrato (não alterado):** o sucesso vem como `{ message, data: { type, recycle } }`, com a **categoria** em `type` e 3 ideias de artesanato, e não os ids de resíduos do banco. Definir com o Aldres e o Bernardo antes de o front consumir essa rota (ajustar o código ou o contrato). A orientação de descarte **sempre** vem do banco, nunca da IA.
+- **Não testado:** a chamada real à AWS Bedrock (credenciais e modelo). Os testes usaram um Bedrock falso.

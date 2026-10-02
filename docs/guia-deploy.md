@@ -42,6 +42,6 @@ Configure no painel do Render; **nunca** commite `.env` ou chaves (Supabase serv
 - **Conexão com o Supabase:** use o **pooler** (`...pooler.supabase.com`, usuário `postgres.<id-do-projeto>`). Num teste local de 02/10, a conexão pelo pooler funcionou **sem SSL** no `databaseService.js`; se falhar no servidor de produção, ajustar o pool (`ssl`) antes de procurar outro problema. A conexão direta (`db.<id>.supabase.co`) costuma ser só IPv6.
 - **Variáveis:** `PORT` é a porta da API e `DB_PORT` é a do Postgres (5432); não misture. Chaves de API do Supabase (`anon`, `service_role`) **não** são usadas pelo backend.
 - **API testada só local.** As rotas de resíduos e pontos foram testadas contra o Supabase real, mas **rodando na máquina de Rafael**. Falta repetir os `curl` de [testes-api.md](testes-api.md) na URL do deploy.
-- **Uma consulta ao banco no carregamento do módulo Bedrock derruba a API inteira** se o banco falhar (veja [guia-backend.md](guia-backend.md#pendência-conhecida-bedrock-derruba-a-api-se-o-banco-falhar)).
+- **Bedrock isolado:** a consulta ao banco do módulo de foto agora só roda quando a rota `/api/identificar-foto` é usada; um banco fora do ar não impede mais a API de subir (veja [guia-backend.md](guia-backend.md#bedrock-o-que-foi-corrigido-e-o-que-falta-0210)).
 - **Segredos:** o `JWT_SECRET` do `.env.example` é público; gerar outro para produção. Nada de chaves no código nem no front.
 - **Antes da demo:** abrir o backend (plano gratuito dorme) e rodar o checklist de [AGENTS.md](../AGENTS.md#11-checklist-da-demo).
