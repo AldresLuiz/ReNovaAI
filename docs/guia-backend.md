@@ -112,11 +112,21 @@ Para sobrescrever uma variável só no comando: `PORT=3000 node --env-file=.env 
 - **Não duplique a regra de distância em JS.** O controller só chama `buscar_residuos` e `pontos_proximos` com parâmetros `$1, $2, $3`.
 - **Teste sem banco:** troque `pool.query` por uma função falsa num script e suba o `Router` num `express()` à parte. Serve para validar status e formato sem depender do Supabase.
 
-### Bedrock: o que foi corrigido e o que falta (02/10)
+### Bedrock: o que foi corrigido e o que falta (02/10, PR #27 na `main`)
 
 - **Corrigido: a rota agora é `POST /api/identificar-foto`**, como no contrato (antes era `/classify`).
 - **Corrigido: o Bedrock não derruba mais a API.** `wasteClassificationService.js` consultava o banco **no carregamento do módulo**; com o banco fora do ar ou a senha errada, o servidor nem subia, nem para as rotas de resíduos. Agora as categorias são lidas só quando a rota de foto é usada (com cache, e sem guardar a falha). Testado: com a senha do banco errada a API sobe, `/api/identificar-foto` responde, e só as rotas que usam o banco devolvem `500`.
 - **Corrigido: o prompt do modelo listava as categorias como `[object Object]`.** Era `rows.join(", ")` sobre objetos `{ nome }`; agora lista os nomes.
 - **Corrigido: os erros da rota de foto seguem o contrato** (`{ "erro": "..." }`): sem imagem = `400`, formato que não seja JPG/PNG/WebP = `400`, foto maior que 5 MB = `413`, campo com nome errado = `400` (o campo certo é `image`), falha da IA ou do banco = `500` genérico. Antes vinham como `{ message }` e o formato inválido virava `500`. Testado com `curl -F`.
 - **Ainda diverge do contrato (não alterado):** o sucesso vem como `{ message, data: { type, recycle } }`, com a **categoria** em `type` e 3 ideias de artesanato, e não os ids de resíduos do banco. Definir com o Aldres e o Bernardo antes de o front consumir essa rota (ajustar o código ou o contrato). A orientação de descarte **sempre** vem do banco, nunca da IA.
-- **Não testado:** a chamada real à AWS Bedrock (credenciais e modelo). Os testes usaram um Bedrock falso.
+- **Não testado:** a chamada real à AWS Bedrock (credenciais, região e `BEDROCK_MODEL_ID`). Os testes usaram um Bedrock falso; veja [testes-api.md](testes-api.md#rota-de-foto-post-apiidentificar-foto-bedrock-fase-2).
+
+**Aprendizados dessa rota (valem para qualquer upload ou recurso opcional)**
+
+- **Erros do `multer` não chegam ao seu handler.** Formato recusado no `fileFilter` e arquivo grande demais (`LIMIT_FILE_SIZE`) são lançados **antes** da rota e caem no `erroMiddleware` como `500`. Rode o `upload.single("image")` dentro de um middleware com callback (`receberImagem` em `wasteController.js`) e traduza: formato = `400`, tamanho = `413`, outros erros do `multer` = `400`, o resto segue para o `erroMiddleware`.
+- **Marque o erro de formato com uma propriedade** (`formatoInvalido: true`) em vez de comparar o texto da mensagem.
+- **Teste upload com `curl -F`**, que é o que o front fará: `curl -F "image=@foto.png;type=image/png" URL`. O `type=` importa, porque o filtro olha o `mimetype` que o cliente declara.
+- **Recurso opcional não pode ter efeito colateral no carregamento do módulo.** Consulta ao banco, chamada de rede ou `await` no topo do arquivo derrubam o servidor inteiro se falharem. Faça só dentro da rota, com cache que **não guarda a falha**.
+- **`array.join()` em objetos vira `[object Object]`.** Mapeie para o campo (`rows.map(l => l.nome)`) antes de montar um texto, principalmente em prompt de IA, onde o erro não aparece como exceção.
+- **Todo erro de rota segue `{ "erro": "..." }`**, inclusive nas rotas opcionais. É o que o front espera (`js/api.js`).
+- **Mocke o Bedrock na hora de testar:** troque `BedrockRuntimeClient.prototype.send` por uma função falsa. Dá para provar upload, prompt, cache e erros sem credenciais da AWS.

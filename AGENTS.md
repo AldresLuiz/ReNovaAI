@@ -74,9 +74,9 @@ Frontend ──► Leaflet + OpenStreetMap (mapa, sem chave de API)
 - O `docker-compose` carrega `migrations/` no Postgres **local** em ordem alfabética, só na primeira criação do volume. No Supabase, os arquivos são aplicados à mão no SQL Editor, um por vez, na ordem do número (veja [docs/guia-banco.md](docs/guia-banco.md)).
 - **Estado em 02/10/2026** (detalhes em [docs/testes-banco.md](docs/testes-banco.md) e [docs/testes-api.md](docs/testes-api.md)):
   - **Banco:** migrations `02` a `06` aplicadas no Supabase. 9 resíduos liberados com fonte ([docs/fontes-orientacoes.md](docs/fontes-orientacoes.md)) e 14 pontos reais de Caruaru, todos `verificado = false` ([docs/fontes-pontos-coleta.md](docs/fontes-pontos-coleta.md)).
-  - **API:** `GET /api/categorias`, `/api/residuos`, `/api/residuos/:id`, `/api/residuos/:id/pontos` e `/api/geocodificar` estão na `main` e foram testadas contra o Supabase real, rodando local. Ainda **não** testadas no deploy nem com o front.
+  - **API:** `GET /api/categorias`, `/api/residuos`, `/api/residuos/:id`, `/api/residuos/:id/pontos` e `/api/geocodificar` estão na `main` e foram testadas contra o Supabase real, rodando local. `POST /api/identificar-foto` (Bedrock, fase 2) também está na `main`, com a rota igual ao contrato, erros no formato `{ erro }` e isolada do banco (a API sobe mesmo com o banco fora). Nada disso foi testado no deploy nem com o front.
   - **Front:** na `main`, `USAR_MOCK = true`; a integração está na branch `api-integration`.
-  - **Pendências:** a rota do Bedrock agora é `POST /api/identificar-foto` (igual ao contrato), os erros já seguem o contrato, mas o formato de sucesso ainda difere (veja [docs/guia-backend.md](docs/guia-backend.md)); segunda conferência de remédio e lâmpada em fonte federal; confirmar o coletor de óleo da Compesa.
+  - **Pendências:** o sucesso da rota de foto devolve a **categoria** (`type`) e não ids de resíduos como o contrato descreve, e a chamada real à AWS Bedrock nunca foi testada (veja [docs/guia-backend.md](docs/guia-backend.md) e [docs/testes-api.md](docs/testes-api.md)); segunda conferência de remédio e lâmpada em fonte federal; confirmar o coletor de óleo da Compesa.
 
 ## 5. Estrutura de pastas
 
