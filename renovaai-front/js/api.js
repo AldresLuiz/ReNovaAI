@@ -46,6 +46,13 @@ export async function buscarResiduoPorId(id) {
   );
 }
 
+export async function buscarPontosProximos(id, lat, lng) {
+  return requisitar(
+    `/api/residuos/${encodeURIComponent(id)}/pontos?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}`,
+    "Não foi possível carregar os pontos de coleta próximos."
+  );
+}
+
 export async function geocodificar(local) {
   return requisitar(
     `/api/geocodificar?q=${encodeURIComponent(local)}`,
