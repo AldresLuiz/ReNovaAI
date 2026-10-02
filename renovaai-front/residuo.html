@@ -61,6 +61,53 @@
         <p id="nao-fazer-residuo"></p>
       </section>
 
+      <section
+        id="secao-localizacao"
+        class="bloco-localizacao"
+        aria-labelledby="titulo-localizacao"
+      >
+        <h2 id="titulo-localizacao">Encontre um ponto de coleta</h2>
+
+        <p>
+          Use sua localização para encontrar pontos de coleta próximos.
+          Sua localização não será armazenada.
+        </p>
+
+        <button id="usar-localizacao" type="button">
+          Usar minha localização
+        </button>
+
+        <button id="buscar-por-local" type="button">
+          Buscar por bairro ou cidade
+        </button>
+
+        <form id="form-local" hidden>
+          <label for="campo-local">
+            Bairro ou cidade
+          </label>
+
+          <input
+            id="campo-local"
+            name="local"
+            type="text"
+            autocomplete="address-level2"
+            placeholder="Ex.: Centro, Caruaru"
+            required
+          >
+
+          <button type="submit">
+            Buscar
+          </button>
+        </form>
+
+        <p
+          id="mensagem-localizacao"
+          role="status"
+          aria-live="polite"
+          hidden
+        ></p>
+      </section>
+
     </div>
 
   </main>

@@ -46,6 +46,13 @@ export async function buscarResiduoPorId(id) {
   );
 }
 
+export async function geocodificar(local) {
+  return requisitar(
+    `/api/geocodificar?q=${encodeURIComponent(local)}`,
+    "Não foi possível encontrar esse local."
+  );
+}
+
 async function requisitar(caminho, mensagemPadrao) {
   let resposta;
 
