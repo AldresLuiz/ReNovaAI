@@ -82,8 +82,24 @@ Resultado: **10 pontos**, ordenados por `distancia_km` (de 0,16 km a 5,11 km), c
 
 ![Pontos de pilhas em Caruaru](img/testes-banco/pontos-pilhas-caruaru.png)
 
+## 7. Depois do `06` (resíduos liberados)
+
+Com os 9 resíduos liberados (`ativo = true`), no Supabase:
+
+| Consulta | Esperado | Resultado | Imagem |
+| --- | --- | --- | --- |
+| `select nome, ativo from residuos order by id;` | os 9 com `ativo = true` | os 9 com `true` | [ver](img/testes-banco/liberacao-residuos-ativos.png) |
+| `buscar_residuos('latinha')` | Lata de alumínio | Lata de alumínio, similaridade 1 | [ver](img/testes-banco/liberacao-busca-latinha.png) |
+| `buscar_residuos('pilah')` | Pilhas e baterias | Pilhas e baterias, similaridade 0,33 | [ver](img/testes-banco/liberacao-busca-pilah.png) |
+| `buscar_residuos('remédio')` | Remédio vencido | Remédio vencido, similaridade 1 | [ver](img/testes-banco/liberacao-busca-remedio.png) |
+
+![Os 9 resíduos ativos](img/testes-banco/liberacao-residuos-ativos.png)
+![Busca por pilah](img/testes-banco/liberacao-busca-pilah.png)
+
+Aqui as buscas de "latinha" e "pilah" passam a funcionar sem ativar resíduo à mão, como era necessário na seção 3.
+
 ## O que ainda não foi testado
 
-- A busca por texto depois da liberação oficial dos 9 resíduos.
 - `pontos_proximos` para os demais resíduos (medicamentos, lâmpadas, eletrônicos, óleo e recicláveis) com os pontos reais.
+- A busca por texto dos outros 6 resíduos e dos demais sinônimos.
 - Os endpoints da API chamando essas funções.

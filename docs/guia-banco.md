@@ -13,9 +13,10 @@ Em `migrations/`:
 | `03_seed_residuos.sql` | Configurações, categorias, resíduos e sinônimos |
 | `04_funcoes_busca.sql` | Funções `distancia_km`, `buscar_residuos` e `pontos_proximos` |
 | `05_seed_pontos_reais.sql` | 14 pontos de coleta reais de Caruaru-PE e 30 ligações ponto-resíduo |
-| `06_...` | (a criar) Liberar resíduos (`ativo = true`) depois de conferidos, e confirmações de pontos |
+| `06_liberar_residuos.sql` | Corrige os textos dos 9 resíduos com fonte oficial e os libera (`ativo = true`). Fontes em [fontes-orientacoes.md](fontes-orientacoes.md) |
+| `07_...` | (a criar) Confirmações de pontos (`verificado = true`) e outras correções |
 
-Os arquivos são **seguros para produção**: não têm `drop`, rodam dentro de `begin/commit` e podem rodar de novo sem duplicar (`create ... if not exists` e `on conflict do nothing`). Depois de aplicado em produção, **não edite** um arquivo: qualquer mudança vira um arquivo novo com número maior (`06_...`).
+Os arquivos são **seguros para produção**: não têm `drop`, rodam dentro de `begin/commit` e podem rodar de novo sem duplicar (`create ... if not exists` e `on conflict do nothing`). Depois de aplicado em produção, **não edite** um arquivo: qualquer mudança vira um arquivo novo com número maior (`07_...`).
 
 ### Como aplicar
 
@@ -69,7 +70,8 @@ Esperado: "latinha" acha "Lata de alumínio"; "pilah" acha pilhas; `pontos_proxi
 
 ## Dados: o que exige cuidado
 
-- **Resíduos entram com `ativo = false` e texto `RASCUNHO:`.** Só aparecem para o público depois de conferidos com fonte oficial (prefeitura, Ministério do Meio Ambiente), sobretudo **pilhas, lâmpadas e medicamentos**. Para liberar: corrigir o texto (tirar o `RASCUNHO:`), registrar a fonte e rodar `update residuos set ativo = true where nome = '...';`. Como o `03` não se edita depois de aplicado, a correção entra num arquivo novo (ex.: `06_liberar_residuos.sql`).
+- **Resíduos entram no `03` com `ativo = false` e texto `RASCUNHO:`** e só aparecem para o público depois de conferidos com fonte oficial. Os 9 foram corrigidos e liberados pelo `06_liberar_residuos.sql`, com as fontes em [fontes-orientacoes.md](fontes-orientacoes.md). **Resíduo novo ou texto alterado segue o mesmo caminho:** corrigir o texto, registrar a fonte, e um arquivo novo com `update residuos set ... ativo = true where nome = '...';` (o `03` e o `06` não se editam depois de aplicados).
+- **Pendente:** segunda conferência de **remédio vencido** e **lâmpada fluorescente** em fonte federal (as páginas do gov.br estavam bloqueadas na consulta).
 - **O `03` não tem pontos de coleta**, nem fictícios. **Não invente pontos.** Os pontos reais estão em `05_seed_pontos_reais.sql` (14 pontos, 30 ligações), com `verificado = true` só nos confirmados e `on conflict (nome, endereco) do nothing`. **Hoje todos estão `verificado = false`.** Para confirmar um ponto depois de aplicado, crie um arquivo novo com `update pontos_coleta set verificado = true where nome = '...';` (não edite o `05`).
 - **Pendência da Compesa:** a loja de atendimento (Rua Frei Caneca, 152) existe, mas falta confirmar que o coletor de óleo de cozinha continua lá (última notícia: 2021). Se não existir mais, o óleo fica sem ponto.
 - **Ficaram de fora do `05`:** Reciclagem Radical (o pin caía em terreno vazio; confirmar pelo WhatsApp) e a Drogasil da Av. José Rodrigues de Jesus.
@@ -80,9 +82,9 @@ Esperado: "latinha" acha "Lata de alumínio"; "pilah" acha pilhas; `pontos_proxi
 
 ## Estado atual (02/10/2026)
 
-- Aplicados no Supabase: `02`, `03`, `04` e `05`. Conferido: `pontos_coleta = 14`, `ponto_residuo = 30`, `buscar_residuos` e `pontos_proximos` respondendo.
-- Os 9 resíduos continuam `ativo = false`: a busca ainda não os encontra até a liberação (`06`).
-- `pontos_proximos` filtra o **ponto** ativo, mas não o resíduo. Dá para testar pontos pelo id do resíduo mesmo com ele inativo.
+- Aplicados no Supabase: `02`, `03`, `04`, `05` e `06`. Conferido: `pontos_coleta = 14`, `ponto_residuo = 30`, os 9 resíduos com `ativo = true` e `buscar_residuos` achando "latinha", "pilah" e "remédio" ([testes-banco.md](testes-banco.md)).
+- A busca já encontra os 9 resíduos; o que falta para o site usar isso são os endpoints da API.
+- `pontos_proximos` filtra o **ponto** ativo, mas não o resíduo: ela funciona pelo id do resíduo mesmo se ele estiver inativo.
 
 ## Aprendizados (problemas que já resolvemos)
 
