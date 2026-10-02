@@ -25,7 +25,7 @@ const upload = multer({
 });
 
 router.post(
-    "/classify",
+    "/api/identificar-foto",
     upload.single("image"),
     async (req, res)=>{
         try {
