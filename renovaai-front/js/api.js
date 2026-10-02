@@ -10,15 +10,10 @@ export async function buscarCategorias() {
     return mockCategorias;
   }
 
-  const resposta = await fetch(
-    `${API_URL}/api/categorias`
+  return requisitar(
+    "/api/categorias",
+    "Não foi possível carregar as categorias."
   );
-
-  if (!resposta.ok) {
-    throw new Error("Não foi possível carregar as categorias.");
-  }
-
-  return resposta.json();
 }
 
 export async function buscarResiduos(termo) {
@@ -26,15 +21,10 @@ export async function buscarResiduos(termo) {
     return buscarResiduosMock(termo);
   }
 
-  const resposta = await fetch(
-    `${API_URL}/api/residuos?q=${encodeURIComponent(termo)}`
+  return requisitar(
+    `/api/residuos?q=${encodeURIComponent(termo)}`,
+    "Não foi possível buscar os resíduos."
   );
-
-  if (!resposta.ok) {
-    throw new Error("Não foi possível buscar os resíduos.");
-  }
-
-  return resposta.json();
 }
 
 export async function buscarResiduoPorId(id) {
@@ -50,15 +40,41 @@ export async function buscarResiduoPorId(id) {
     return residuo;
   }
 
-  const resposta = await fetch(
-    `${API_URL}/api/residuos/${encodeURIComponent(id)}`
+  return requisitar(
+    `/api/residuos/${encodeURIComponent(id)}`,
+    "Não foi possível carregar as informações do resíduo."
   );
+}
 
-  if (!resposta.ok) {
-    throw new Error("Não foi possível carregar as informações do resíduo.");
+async function requisitar(caminho, mensagemPadrao) {
+  let resposta;
+
+  try {
+    resposta = await fetch(`${API_URL}${caminho}`);
+  } catch (erro) {
+    console.error(erro);
+    throw new Error(
+      "Não foi possível conectar ao servidor. Tente novamente em alguns instantes."
+    );
   }
 
-  return resposta.json();
+  let dados;
+
+  try {
+    dados = await resposta.json();
+  } catch {
+    dados = null;
+  }
+
+  if (!resposta.ok) {
+    throw new Error(
+      dados?.erro ||
+      dados?.error ||
+      mensagemPadrao
+    );
+  }
+
+  return dados;
 }
 
 function buscarResiduosMock(termo) {

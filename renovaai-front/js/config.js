@@ -1,3 +1,4 @@
 export const USAR_MOCK = true;
-//export const USAR_MOCK = false; quando integrar com o backend, descomentar esta linha e comentar a linha acima
-export const API_URL = "http://localhost:3000";
+
+// Altere para false ao testar a integração com o backend real.
+export const API_URL = "http://localhost:8080";
