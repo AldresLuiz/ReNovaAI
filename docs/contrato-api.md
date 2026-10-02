@@ -69,7 +69,7 @@ Usa `pontos_proximos`. `raio_usado`: `inicial` (10 km) | `ampliado` (25 km) | `m
 
 ## GET /api/geocodificar?q=bairro
 
-Proxy para o Nominatim. Resposta `{ "lat": -8.28, "lng": -35.97 }`. Não encontrado: `404`. Serviço fora do ar: `502` com mensagem simples. Respeitar a política de uso do Nominatim (User-Agent identificado, sem rajadas).
+Proxy para o Nominatim. Resposta `{ "lat": -8.28, "lng": -35.97 }`. Não encontrado: `404`. Serviço fora do ar: `502` com mensagem simples. Muitas buscas ao mesmo tempo: `429`. Para respeitar a política de uso do Nominatim (User-Agent identificado, no máximo 1 requisição por segundo), o backend guarda buscas repetidas por 10 minutos e espaça as chamadas ao Nominatim.
 
 ## POST /api/identificar-foto
 

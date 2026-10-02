@@ -79,11 +79,11 @@ Frontend ──► Leaflet + OpenStreetMap (mapa, sem chave de API)
 ReNovaAI/
 ├── AGENTS.md
 ├── src/                     backend
-│   ├── controllers/         (existente) handlers Express
+│   ├── controllers/         rotas /api/* e handlers Express (um Router por arquivo)
 │   ├── datamodels/          (existente) DTOs/validação (zod)
 │   ├── middleware/          (existente)
 │   ├── services/            (existente) acesso ao banco e regras
-│   ├── routes/              rotas /api/*
+│   ├── routes/              (vazia, reservada; as rotas ficam em controllers/)
 │   └── index.js
 ├── migrations/              SQL executado pelo Postgres do compose
 ├── renovaai-front/          HTML + CSS + JS puro
