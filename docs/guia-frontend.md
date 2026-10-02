@@ -26,7 +26,7 @@ Módulos JS não funcionam via `file://`.
 
 ## Mock x API real
 
-`USAR_MOCK = true` usa só `js/mocks.js`. Com a API no ar: `USAR_MOCK = false` e ajustar `API_URL`. O formato do mock **é** o de [contrato-api.md](contrato-api.md); se um mudar, mude o outro.
+`USAR_MOCK = true` usa só `js/mocks.js`. Com a API no ar: `USAR_MOCK = false` e ajustar `API_URL`. As rotas `/api/categorias`, `/api/residuos`, `/api/residuos/:id` e `/api/residuos/:id/pontos` já existem na `main` e foram testadas contra o Supabase real ([testes-api.md](testes-api.md)). Trate `raio_usado: null` (resíduo sem ponto) e lembre que `horario` e `contato` vêm `null` e `verificado` vem `false` nos pontos de hoje (RN05 e RN12). O formato do mock **é** o de [contrato-api.md](contrato-api.md); se um mudar, mude o outro.
 
 ## Regras de código
 
