@@ -65,7 +65,7 @@ Usa `pontos_proximos`. `raio_usado`: `inicial` (10 km) | `ampliado` (25 km) | `m
 }
 ```
 
-`lat`/`lng` ausentes ou inválidos: `400`. O backend **não armazena** a localização (RNF07).
+`lat`/`lng` ausentes ou inválidos (texto, vazio, fora de -90..90 e -180..180): `400` com `{ "erro": "..." }`. Resíduo inexistente, inativo ou com id inválido: `404`. Nenhum ponto aceita o resíduo: `200` com `{ "raio_usado": null, "pontos": [] }`. O backend **não armazena** a localização nem a escreve no log (RNF07).
 
 ## GET /api/geocodificar?q=bairro
 
