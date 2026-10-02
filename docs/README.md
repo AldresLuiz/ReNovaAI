@@ -7,6 +7,7 @@ Comece pelo [AGENTS.md](../AGENTS.md) na raiz (escopo, decisões, regras de neg�
 | [contrato-api.md](contrato-api.md) | Todos | Rotas, parâmetros, respostas e erros |
 | [guia-backend.md](guia-backend.md) | Aldres, Carlos | Como criar rotas, padrões e CORS |
 | [guia-banco.md](guia-banco.md) | Rafael | Schema, seed, funções SQL e dados reais |
+| [fontes-pontos-coleta.md](fontes-pontos-coleta.md) | Rafael, todos | De onde vem cada ponto de coleta, o que ele aceita e como confirmar |
 | [fontes-orientacoes.md](fontes-orientacoes.md) | Rafael, todos | De onde vem cada orientação de descarte (links, o que foi removido e o que falta conferir) |
 | [testes-banco.md](testes-banco.md) | Rafael, Aldres | Evidências dos testes das funções SQL no Supabase (com imagens) |
 | [guia-frontend.md](guia-frontend.md) | Bernardo, Carlos | Telas, mocks, mapa e acessibilidade |
