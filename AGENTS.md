@@ -76,7 +76,7 @@ Frontend ──► Leaflet + OpenStreetMap (mapa, sem chave de API)
   - **Banco:** migrations `02` a `06` aplicadas no Supabase. 9 resíduos liberados com fonte ([docs/fontes-orientacoes.md](docs/fontes-orientacoes.md)) e 14 pontos reais de Caruaru, todos `verificado = false` ([docs/fontes-pontos-coleta.md](docs/fontes-pontos-coleta.md)).
   - **API:** `GET /api/categorias`, `/api/residuos`, `/api/residuos/:id`, `/api/residuos/:id/pontos` e `/api/geocodificar` estão na `main` e foram testadas contra o Supabase real, rodando local. Ainda **não** testadas no deploy nem com o front.
   - **Front:** na `main`, `USAR_MOCK = true`; a integração está na branch `api-integration`.
-  - **Pendências:** `POST /classify` (Bedrock) usa outro caminho que o contrato e uma consulta ao banco no carregamento do módulo que derruba a API se o banco falhar (veja [docs/guia-backend.md](docs/guia-backend.md)); segunda conferência de remédio e lâmpada em fonte federal; confirmar o coletor de óleo da Compesa.
+  - **Pendências:** a rota do Bedrock agora é `POST /api/identificar-foto` (igual ao contrato), mas o formato da resposta ainda difere do contrato (veja [docs/guia-backend.md](docs/guia-backend.md)); segunda conferência de remédio e lâmpada em fonte federal; confirmar o coletor de óleo da Compesa.
 
 ## 5. Estrutura de pastas
 

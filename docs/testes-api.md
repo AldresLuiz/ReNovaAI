@@ -63,7 +63,7 @@ Estes casos só foram testados com o banco falso, porque dependem de um estado q
 - **O front chamando a API.** Na `main`, `renovaai-front/js/config.js` ainda tem `USAR_MOCK = true`. O site não usa essas rotas até alguém trocar para `false` e apontar o `API_URL`.
 - **O deploy do Aldres.** Todos os testes foram na máquina local.
 - **Resíduo inativo devolvendo 404 por id**, contra o banco real: hoje os 9 estão ativos. Só foi testado com o banco falso.
-- **`/api/geocodificar`**, **autenticação** e **`POST /classify` (Bedrock)**: fora deste relatório.
+- **`/api/geocodificar`**, **autenticação** e **`POST /api/identificar-foto` (Bedrock)**: fora deste relatório.
 - **Carga e concorrência.**
 
 ## Como repetir
