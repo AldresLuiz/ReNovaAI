@@ -34,3 +34,11 @@ Configure no painel do Render; **nunca** commite `.env` ou chaves (Supabase serv
 - Plano gratuito do Render "dorme": abra o backend antes da demo.
 - O pool em `databaseService.js` hoje não configura SSL; ajustar para o Supabase se necessário.
 - Antes de cada demo, rodar o checklist de [AGENTS.md](../AGENTS.md#11-checklist-da-demo).
+
+## Aprendizados (problemas que já resolvemos)
+
+- **Aplicar migration não é automático no Supabase.** O Supabase só roda o que alguém colar no SQL Editor, um arquivo por vez, na ordem do número (`02` → `03` → `04` → `05`). Depois de cada deploy do banco, confira as contagens (`pontos_coleta = 14`, `ponto_residuo = 30`) e uma chamada de função.
+- **RLS:** as 6 tabelas do `02` já têm RLS ligado, sem policies. Falta confirmar com o Aldres o RLS na tabela `users` do `init_db.sql` (guarda hash de senha).
+- **Conexão com o Supabase:** o `databaseService.js` não configura SSL. Se a conexão falhar em produção, ajustar o pool (`ssl`) antes de procurar outro problema.
+- **Segredos:** o `JWT_SECRET` do `.env.example` é público; gerar outro para produção. Nada de chaves no código nem no front.
+- **Antes da demo:** abrir o backend (plano gratuito dorme) e rodar o checklist de [AGENTS.md](../AGENTS.md#11-checklist-da-demo).

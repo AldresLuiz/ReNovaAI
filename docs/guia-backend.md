@@ -61,3 +61,12 @@ Somente em `POST /api/identificar-foto`, isolado em um service próprio. Se falh
 docker compose up --build
 curl "http://localhost:8080/api/residuos?q=latinha"
 ```
+
+## Aprendizados (problemas que já resolvemos)
+
+- **Ordem no `src/index.js` importa.** `corsMiddleware` vem **antes** de `express.static` e das rotas; `rotaNaoEncontrada` depois de todas as rotas e `erroMiddleware` por último. Um CORS registrado só no arquivo, mas sem `app.use(corsMiddleware)`, não faz nada: já tivemos o item "CORS" marcado como pronto sem estar ligado.
+- **Não logar localização (RNF07).** O logger usa `req.path`, não `req.originalUrl`, para a query string (`lat`/`lng`) não ir para o log.
+- **Nominatim tem limite de uso** (1 requisição por segundo, `User-Agent` identificado). O `/api/geocodificar` guarda buscas repetidas por 10 minutos, espaça as chamadas em 1,1 s e responde `429` se a fila passar de 5 s. Não chame o Nominatim direto do front nem de outro controller.
+- **Falha de serviço externo não derruba o fluxo.** Nominatim fora do ar vira `502` com mensagem simples, e o front cai para o modo sem mapa (RNF08).
+- **Testar contra o banco real.** O endpoint de pontos já pode ser testado com o id de qualquer resíduo (até inativo), porque `pontos_proximos` só filtra o ponto. A busca por texto (`buscar_residuos`) só devolve resíduos ativos.
+- Antes de dar um item de rota por concluído, confira na `main` (não só na branch) que a rota está registrada em `src/index.js`.

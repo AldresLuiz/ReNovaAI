@@ -19,3 +19,11 @@ Descreva no PR o que foi feito e **o que não foi testado**.
 
 - Fim do dia 1: busca e orientação ponta a ponta.
 - Fim do dia 2: demo completa no celular.
+
+## Aprendizados (problemas que já resolvemos)
+
+- **Migration aplicada não se edita.** Se mudar algo já aplicado no Supabase, crie um arquivo novo com número maior. Se o arquivo ainda não foi aplicado, pode ser editado.
+- **Confira na `main`, não só na branch.** Itens marcados como prontos no Trello ficaram sem estar na `main` (por exemplo, o CORS). Antes de marcar, rode `git fetch` e olhe a `main`.
+- **Não faça `git merge main` por engano** numa branch de outra pessoa. Para atualizar a sua, use `git pull --rebase origin main`.
+- Depois do merge de um PR, volte para a `main` (`git checkout main && git pull --ff-only origin main`) antes de abrir a próxima branch.
+- Commit de documentação e de código em PRs separados facilita a revisão.
