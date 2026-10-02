@@ -21,7 +21,7 @@ Público: população em geral, com atenção a **baixo letramento digital**: in
 | Pessoa | Papel | Dono de |
 | --- | --- | --- |
 | Rafael | Backend, banco de dados | Schema, seed, funções SQL, pontos de coleta reais |
-| Aldres | Backend, API de negócio e infraestrutura | Endpoints, AWS (Bedrock, credenciais), hospedagem e deploy (Render, Vercel) |
+| Aldres | Backend, API de negócio e infraestrutura | Endpoints, AWS (Bedrock, credenciais), hospedagem e deploy (Docker por SSH; Vercel como demo) |
 | Carlos | Backend, integração front e back | Contrato da API, consumo no front, CORS, tratamento de erro, modo sem mapa, teste do deploy |
 | Bernardo | Frontend | Telas, mapa, "Como chegar", acessibilidade, mobile |
 
@@ -40,10 +40,9 @@ A divisão de infraestrutura (AWS/deploy com o Aldres; CORS/integração com o C
 ## 4. Arquitetura e stack
 
 ```
-Usuário → Frontend (HTML+CSS+JS puro, Vercel)
-              │  REST/HTTPS
-              ▼
-          Backend API (Node + Express, Render) ──► Postgres (Supabase)
+Usuário → Backend API (Node + Express, Docker) ──► Postgres (Supabase)
+              │   serve o front estático (HTML+CSS+JS puro)
+              │   e a API no mesmo domínio
               │                     │
               │                     └─► AWS Bedrock (só /identificar-foto, opcional, fase 2)
               └─► Nominatim (geocodificação de bairro/cidade)
@@ -74,8 +73,8 @@ Frontend ──► Leaflet + OpenStreetMap (mapa, sem chave de API)
 - O `docker-compose` carrega `migrations/` no Postgres **local** em ordem alfabética, só na primeira criação do volume. No Supabase, os arquivos são aplicados à mão no SQL Editor, um por vez, na ordem do número (veja [docs/guia-banco.md](docs/guia-banco.md)).
 - **Estado em 02/10/2026** (detalhes em [docs/testes-banco.md](docs/testes-banco.md) e [docs/testes-api.md](docs/testes-api.md)):
   - **Banco:** migrations `02` a `06` aplicadas no Supabase. 9 resíduos liberados com fonte ([docs/fontes-orientacoes.md](docs/fontes-orientacoes.md)) e 14 pontos reais de Caruaru, todos `verificado = false` ([docs/fontes-pontos-coleta.md](docs/fontes-pontos-coleta.md)).
-  - **API:** `GET /api/categorias`, `/api/residuos`, `/api/residuos/:id`, `/api/residuos/:id/pontos` e `/api/geocodificar` estão na `main` e foram testadas contra o Supabase real, rodando local. `POST /api/identificar-foto` (Bedrock, fase 2) também está na `main`, com a rota igual ao contrato, erros no formato `{ erro }` e isolada do banco (a API sobe mesmo com o banco fora). Nada disso foi testado no deploy nem com o front.
-  - **Front:** na `main`, `USAR_MOCK = true`; a integração está na branch `api-integration`.
+  - **API:** `GET /api/categorias`, `/api/residuos`, `/api/residuos/:id`, `/api/residuos/:id/pontos` e `/api/geocodificar` estão na `main` e foram testadas contra o Supabase real, rodando local. `POST /api/identificar-foto` (Bedrock, fase 2) também está na `main`, com a rota igual ao contrato, erros no formato `{ erro }` e isolada do banco (a API sobe mesmo com o banco fora). Testada também no domínio da Vercel (a API no ar responde certo, com o código mais recente); o site completo ainda não foi testado num celular.
+  - **Front:** a integração com a API (busca, orientação, localização, mapa e pontos) está na `main` desde 02/10, com `USAR_MOCK = false` e `API_URL = ""` (mesma origem). **Hospedagem:** o site é servido pelo próprio backend (Aldres), com deploy **manual** (workflow `Deploy`, SSH + `docker compose`). Em 02/10, `renovaai-demo.vercel.app` servia o front **antigo, em mock**, embora a API respondesse certo por esse domínio: definir um link oficial da demo (veja [docs/guia-deploy.md](docs/guia-deploy.md)).
   - **Pendências:** o sucesso da rota de foto devolve a **categoria** (`type`) e não ids de resíduos como o contrato descreve, e a chamada real à AWS Bedrock nunca foi testada (veja [docs/guia-backend.md](docs/guia-backend.md) e [docs/testes-api.md](docs/testes-api.md)); segunda conferência de remédio e lâmpada em fonte federal; confirmar o coletor de óleo da Compesa.
 
 ## 5. Estrutura de pastas
@@ -191,7 +190,7 @@ Pasta `renovaai-front/`: `index.html` (busca e atalhos), `residuo.html` (`?id=8`
 ## 14. Por pessoa (para o Claude Code de cada um)
 
 - **Rafael:** `migrations/` (schema, seed), pontos reais, conferência das orientações, testes das funções SQL. Guia: [docs/guia-banco.md](docs/guia-banco.md).
-- **Aldres:** endpoints da seção 7, conexão com o Supabase, AWS, Render, Vercel. Guias: [docs/guia-backend.md](docs/guia-backend.md), [docs/guia-deploy.md](docs/guia-deploy.md).
+- **Aldres:** endpoints da seção 7, conexão com o Supabase, AWS, deploy (Docker por SSH) e Vercel. Guias: [docs/guia-backend.md](docs/guia-backend.md), [docs/guia-deploy.md](docs/guia-deploy.md).
 - **Carlos:** contrato, CORS, `js/api.js` com a API real, Nominatim, erros e modo sem mapa. Guias: [docs/contrato-api.md](docs/contrato-api.md), [docs/guia-backend.md](docs/guia-backend.md).
 - **Bernardo:** `renovaai-front/`, Leaflet, "Como chegar", acessibilidade e mobile. Guia: [docs/guia-frontend.md](docs/guia-frontend.md).
 
@@ -199,6 +198,8 @@ Pasta `renovaai-front/`: `index.html` (busca e atalhos), `residuo.html` (`?id=8`
 
 - Cargo do Aldres e se "infraestrutura" inclui o deploy do front (assumido que sim).
 - Região dos pontos de coleta: **definida como Caruaru-PE** (14 pontos reais no banco). O `mocks.js` do front ainda usa coordenadas fictícias.
+- **Link oficial da demo** e se a Vercel continua sendo usada (o front dela estava desatualizado e em mock em 02/10).
+- **Busca por bairro:** o Nominatim cobre mal os bairros de Caruaru e "Centro, Caruaru" devolve uma coordenada errada (veja [docs/testes-api.md](docs/testes-api.md)).
 - Para o time: o `.env` com a conexão do Supabase fica só local, nunca no git; use o **pooler** e o usuário `postgres.<id>` (veja [docs/guia-backend.md](docs/guia-backend.md#testar-a-api)).
 - API Express completa ou só chamadas às funções SQL (hoje o repo segue Express + `pg`).
 - Se sobrar tempo: `POST /api/identificar-foto` com Bedrock.

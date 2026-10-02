@@ -10,6 +10,8 @@ Relatório dos testes das rotas de resíduos, pontos e da rota de foto (Bedrock)
 | 2. Supabase real, branch | API local (`node --env-file=.env src/index.js`, porta 3000) ligada ao Supabase pelo **pooler**, em `rafael/endpoints-residuos` | Provar que as rotas chamam as funções SQL certas, com os dados reais |
 | 3. Supabase real, `main` | A mesma API, na `main` (commit `320d6e5`, depois do merge dos PRs #25 e #26) | Garantir que o que foi mergeado funciona |
 | 4. Rota de foto, `main` | API local na `main` (commit `02ae708`, depois do PR #27), com `curl -F`, com a senha do banco certa e errada; mais testes com **Bedrock falso** | Validar upload, erros e o isolamento do banco sem credenciais da AWS |
+| 5. Site completo, local | Backend na `main` (commit `1507b0e`) servindo o front e a API na mesma origem, ligado ao Supabase | Validar o que o front faz com `API_URL = ""` |
+| 6. Produção, por fora | `curl` em `https://renovaai-demo.vercel.app` | Ver o que está no ar |
 
 Só foram feitas consultas de leitura (`select`) no banco. Nada foi escrito.
 
@@ -84,10 +86,40 @@ Testada na `main` (commit `02ae708`, depois do PR #27), com `curl -F` e `image` 
 
 **Ainda diverge do contrato:** o sucesso devolve `{ message, data: { type, recycle } }`, com a **categoria** em `type`, e não os ids de resíduos do banco. Decisão pendente com Aldres e Bernardo.
 
+## Site completo, local (commit `1507b0e`)
+
+Com o backend servindo o front (`express.static`) e `API_URL = ""`: `/`, `/residuo.html`, `/js/config.js`, `/js/api.js` e `/css/style.css` respondem 200; e as chamadas na mesma origem (`/api/categorias`, `/api/residuos?q=latinha`, `/api/residuos/1`, `/api/residuos/2/pontos`) devolvem 200 com dados do Supabase (o texto do resíduo 1 vem do `06`, sem "RASCUNHO:").
+
+## Produção, por fora (`renovaai-demo.vercel.app`, 02/10)
+
+| O que | Resultado |
+| --- | --- |
+| `/api/categorias`, `/api/residuos?q=latinha`, `?q=pilah`, `/api/residuos/1` | 200, dados certos (do Supabase, com o texto do `06`) |
+| `/api/residuos/2/pontos` no centro de Caruaru | 200, `inicial`, Drogasil Frei Caneca em primeiro |
+| `/pontos` sem `lat`/`lng`; `/api/residuos/999` | 400 e 404, com `{erro}` |
+| `/api/geocodificar?q=Caruaru` | 200, coordenada certa |
+| `POST /api/identificar-foto` sem imagem; `POST /classify` | 400 `{erro}`; 404 (o backend no ar tem o código mais recente) |
+| `OPTIONS /api/categorias` | 204 |
+| **Front servido** (`/js/config.js`) | **`USAR_MOCK = true` e `API_URL = "http://localhost:3000"`**: é o front do dia 01/10 (igual ao que a `main` tinha antes dos commits de 02/10 do Bernardo). Ele **nunca chama a API** e mostra os pontos fictícios do `mocks.js` |
+
+Ou seja: a **API em produção funciona**, mas o **front que essa URL mostra está desatualizado e em mock**. A resposta traz `Server: Vercel` também em `/api/*`, então a Vercel repassa `/api` para o backend (esse redirecionamento não está no repositório). Segundo o Aldres, o site também é servido pelo próprio backend, em outro endereço (que não conseguimos testar sem o domínio). Detalhes e o que fazer: [guia-deploy.md](guia-deploy.md).
+
+## Geocodificação de bairros de Caruaru
+
+`GET /api/geocodificar` testado local (Nominatim), em 02/10:
+
+| Busca | Resultado |
+| --- | --- |
+| `Caruaru`, `Caruaru, PE`, `Nova Caruaru`, `Recife`, `Bezerros` | 200, coordenada certa |
+| `Indianópolis`, `Indianópolis, Caruaru`, `Indianópolis, Caruaru, Pernambuco`, `Petrópolis, Caruaru`, `Universitário, Caruaru`, `Maurício de Nassau, Caruaru` | **404** ("Não encontramos esse local") |
+| `Centro, Caruaru` | **200, mas com coordenada errada** (-8,88, -36,49), a cerca de 70 km de Caruaru |
+
+O OpenStreetMap cobre mal os bairros de Caruaru. O pior caso é o "Centro": não dá erro e devolve um lugar errado, então os pontos listados ficariam distantes. Para a demo ("Recusar a localização e buscar por bairro"), só buscar por **"Caruaru"** funciona de forma confiável. Possíveis saídas (não implementadas): restringir a busca à região de Caruaru no Nominatim, ou uma lista fixa de bairros com coordenada.
+
 ## O que ainda NÃO foi testado
 
-- **O front chamando a API.** Na `main`, `renovaai-front/js/config.js` ainda tem `USAR_MOCK = true`. O site não usa essas rotas até alguém trocar para `false` e apontar o `API_URL`.
-- **O deploy do Aldres.** Todos os testes foram na máquina local.
+- **O site completo no ar, no celular**, e o front atual publicado (o da Vercel estava desatualizado em 02/10). A API em produção foi testada só por `curl`.
+- **O domínio do backend que serve o site**: não temos a URL; só testamos o domínio da Vercel.
 - **Resíduo inativo devolvendo 404 por id**, contra o banco real: hoje os 9 estão ativos. Só foi testado com o banco falso.
 - **A AWS Bedrock de verdade** (veja a seção da rota de foto).
 - **`/api/geocodificar`** e **autenticação**: fora deste relatório.
