@@ -21,6 +21,11 @@ const formLocal = document.getElementById("form-local");
 const campoLocal = document.getElementById("campo-local");
 const mensagemLocalizacao = document.getElementById("mensagem-localizacao");
 
+const secaoPontos = document.getElementById("secao-pontos");
+const mapaPontos = document.getElementById("mapa-pontos");
+
+let mapa = null;
+
 botaoUsarLocalizacao.addEventListener("click", () => {
   if (!navigator.geolocation) {
     mostrarMensagemLocalizacao(
@@ -44,7 +49,7 @@ botaoUsarLocalizacao.addEventListener("click", () => {
         "Localização obtida. Agora podemos buscar pontos de coleta próximos."
       );
 
-      console.log("Coordenadas obtidas:", coordenadas);
+      mostrarMapa(coordenadas);
     },
     (erro) => {
       console.error(erro);
@@ -91,7 +96,7 @@ formLocal.addEventListener("submit", async (evento) => {
       "Local encontrado. Agora podemos buscar pontos de coleta próximos."
     );
 
-    console.log("Coordenadas encontradas:", coordenadas);
+    mostrarMapa(coordenadas);
   } catch (erro) {
     console.error(erro);
 
@@ -109,6 +114,50 @@ function mostrarFormularioLocal() {
 function mostrarMensagemLocalizacao(mensagem) {
   mensagemLocalizacao.textContent = mensagem;
   mensagemLocalizacao.hidden = false;
+}
+
+function mostrarMapa(coordenadas) {
+  if (
+    !coordenadas ||
+    !Number.isFinite(Number(coordenadas.lat)) ||
+    !Number.isFinite(Number(coordenadas.lng))
+  ) {
+    mostrarMensagemLocalizacao(
+      "Não foi possível exibir o mapa para essa localização."
+    );
+    return;
+  }
+
+  if (typeof L === "undefined") {
+    console.error("Leaflet não foi carregado.");
+
+    mostrarMensagemLocalizacao(
+      "O mapa não pôde ser carregado. As informações dos pontos continuarão disponíveis em texto."
+    );
+    return;
+  }
+
+  const lat = Number(coordenadas.lat);
+  const lng = Number(coordenadas.lng);
+
+  secaoPontos.hidden = false;
+
+  if (!mapa) {
+    mapa = L.map(mapaPontos).setView([lat, lng], 13);
+
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap"
+    }).addTo(mapa);
+  } else {
+    mapa.setView([lat, lng], 13);
+  }
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      mapa.invalidateSize();
+    });
+  });
 }
 
 async function carregarResiduo() {

@@ -13,6 +13,11 @@
     rel="stylesheet"
   >
 
+    <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  >
+
   <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -108,6 +113,37 @@
         ></p>
       </section>
 
+      <section
+        id="secao-pontos"
+        class="bloco-pontos"
+        aria-labelledby="titulo-pontos"
+        hidden
+      >
+        <h2 id="titulo-pontos">Pontos de coleta próximos</h2>
+
+        <p
+          id="mensagem-raio"
+          class="mensagem-raio"
+          role="status"
+          hidden
+        ></p>
+
+        <div
+          id="mapa-pontos"
+          class="mapa-pontos"
+          aria-label="Mapa com os pontos de coleta próximos"
+        ></div>
+
+        <div class="lista-pontos-container">
+          <h3>Locais encontrados</h3>
+
+          <ul
+            id="lista-pontos"
+            class="lista-pontos"
+          ></ul>
+        </div>
+      </section>
+
     </div>
 
   </main>
@@ -118,6 +154,12 @@
       ODS 12 – Consumo e Produção Responsáveis
     </p>
   </footer>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
 
   <script type="module" src="js/residuo.js"></script>
 </body>
