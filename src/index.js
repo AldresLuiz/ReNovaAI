@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser"
 import authController from "./controllers/authController.js"
 import wasteController from "./controllers/wasteController.js"
 import geocodificarController from "./controllers/geocodificarController.js"
+import residuosController from "./controllers/residuosController.js"
 import { fileURLToPath } from "url";
 import path from "path";
 import { corsMiddleware } from "./middleware/corsMiddleware.js"
@@ -26,6 +27,7 @@ app.use((req, res, next)=>{
 //Adicionar Controllers aqui
 app.use(authController)
 app.use(geocodificarController)
+app.use(residuosController)
 app.use(wasteController)
 
 app.use(rotaNaoEncontrada)       // sempre depois de todas as rotas

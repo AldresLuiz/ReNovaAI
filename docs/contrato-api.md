@@ -29,7 +29,7 @@ Usa a função SQL `buscar_residuos`. Ignora acento e caixa, tolera erro de digi
 [{ "id": 3, "nome": "Lata de alumínio", "categoria": "Metais", "similaridade": 0.8 }]
 ```
 
-`q` vazio ou ausente: `400` com `{ "erro": "..." }`.
+`q` vazio, ausente ou com mais de 100 caracteres: `400` com `{ "erro": "..." }`.
 
 ## GET /api/residuos/:id
 
@@ -46,7 +46,7 @@ Usa a função SQL `buscar_residuos`. Ignora acento e caixa, tolera erro de digi
 }
 ```
 
-Id inexistente ou inativo: `404`.
+Id inexistente, inativo ou inválido (texto, zero, negativo, decimal): `404` com `{ "erro": "..." }`.
 
 ## GET /api/residuos/:id/pontos?lat=-8.28&lng=-35.97
 
