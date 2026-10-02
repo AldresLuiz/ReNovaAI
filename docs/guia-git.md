@@ -27,3 +27,6 @@ Descreva no PR o que foi feito e **o que não foi testado**.
 - **Não faça `git merge main` por engano** numa branch de outra pessoa. Para atualizar a sua, use `git pull --rebase origin main`.
 - Depois do merge de um PR, volte para a `main` (`git checkout main && git pull --ff-only origin main`) antes de abrir a próxima branch.
 - Commit de documentação e de código em PRs separados facilita a revisão.
+- **Confira a branch antes de commitar** (`git branch --show-current`). Se commitou na `main` por engano e **ainda não deu push**: `git checkout -b <nova-branch>` (leva o commit junto) e depois `git branch -f main origin/main`. Nada se perde e a `main` volta ao que está no GitHub.
+- **Duas branches editando os mesmos docs geram conflito.** Antes de atualizar `AGENTS.md`, `contrato-api.md` ou os guias na `main`, veja se há PR aberto que mexe neles (`git log origin/main..origin/<branch> -- docs`).
+- **Atualize a `main` local antes de criar a branch** (`git fetch && git pull --ff-only origin main`): uma branch criada de uma `main` velha obriga a atualizar depois.

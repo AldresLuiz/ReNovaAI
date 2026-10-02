@@ -12,16 +12,20 @@ Comece pelo [AGENTS.md](../AGENTS.md) na raiz (escopo, decisões, regras de neg�
 | [testes-banco.md](testes-banco.md) | Rafael, Aldres | Evidências dos testes das funções SQL no Supabase (com imagens) |
 | [testes-api.md](testes-api.md) | Todos | Relatório dos testes da API contra o Supabase real e o que ainda não foi testado |
 | [guia-frontend.md](guia-frontend.md) | Bernardo, Carlos | Telas, mocks, mapa e acessibilidade |
-| [guia-deploy.md](guia-deploy.md) | Aldres | Variáveis de ambiente, Render, Vercel, Supabase |
+| [guia-deploy.md](guia-deploy.md) | Aldres | Como está no ar (Docker por SSH, site servido pela API), variáveis, checklist de publicação, Vercel e Supabase |
 | [guia-git.md](guia-git.md) | Todos | Branches, commits e como avisar mudanças |
 | [guia-trello.md](guia-trello.md) | Todos | Listas, etiquetas e fluxo do quadro do Trello |
 
 ## Rodar localmente
 
+O backend **serve o front** (`express.static`) e a API no mesmo endereço, então basta subir o backend e abrir o site nele. Detalhes e opção contra o Supabase em [guia-backend.md](guia-backend.md#testar-a-api).
+
 ```bash
-# backend + Postgres (porta 8080)
+# Opção 1: backend + Postgres local no Docker (porta 8080) -> http://localhost:8080
 docker compose up --build
 
-# frontend (outra aba)
-cd renovaai-front && python3 -m http.server 8000
+# Opção 2: backend local ligado ao Supabase (precisa do .env, só local) -> http://localhost:3000
+PORT=3000 node --env-file=.env src/index.js
 ```
+
+Para mexer só no front com um servidor estático (`cd renovaai-front && python3 -m http.server 8000`), o `config.js` precisa apontar `API_URL` para o backend, e o backend só libera o CORS para `http://localhost:8000`.
