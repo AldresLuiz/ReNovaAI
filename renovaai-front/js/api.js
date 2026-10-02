@@ -60,11 +60,28 @@ export async function geocodificar(local) {
   );
 }
 
-async function requisitar(caminho, mensagemPadrao) {
+// Foto (opcional): a IA só diz a categoria; devolve { categoria, residuos: [{ id, nome }] }.
+// Sem categoria reconhecida: { categoria: null, residuos: [] }.
+export async function identificarFoto(arquivo) {
+  if (USAR_MOCK) {
+    return { categoria: null, residuos: [] };
+  }
+
+  const formulario = new FormData();
+  formulario.append("image", arquivo);
+
+  return requisitar(
+    "/api/identificar-foto",
+    "Não foi possível identificar a foto agora.",
+    { method: "POST", body: formulario }
+  );
+}
+
+async function requisitar(caminho, mensagemPadrao, opcoes) {
   let resposta;
 
   try {
-    resposta = await fetch(`${API_URL}${caminho}`);
+    resposta = await fetch(`${API_URL}${caminho}`, opcoes);
   } catch (erro) {
     console.error(erro);
     throw new Error(

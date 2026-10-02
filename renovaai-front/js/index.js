@@ -1,6 +1,7 @@
 import {
   buscarResiduos,
-  buscarCategorias
+  buscarCategorias,
+  identificarFoto
 } from "./api.js";
 
 const formBusca = document.getElementById("form-busca");
@@ -9,6 +10,11 @@ const secaoResultados = document.getElementById("resultados");
 const mensagemResultados = document.getElementById("mensagem-resultados");
 const listaResultados = document.getElementById("lista-resultados");
 const listaCategorias = document.getElementById("lista-categorias");
+const campoFoto = document.getElementById("foto");
+const mensagemFoto = document.getElementById("mensagem-foto");
+
+const TIPOS_FOTO = ["image/jpeg", "image/png", "image/webp"];
+const TAMANHO_MAXIMO_FOTO = 5 * 1024 * 1024; // 5 MB, igual ao servidor
 
 formBusca.addEventListener("submit", async (evento) => {
   evento.preventDefault();
@@ -29,6 +35,60 @@ formBusca.addEventListener("submit", async (evento) => {
   } catch (erro) {
     console.error(erro);
     mostrarErro();
+  }
+});
+
+// Foto (opcional): se falhar, a busca por texto continua funcionando.
+campoFoto.addEventListener("change", async () => {
+  const arquivo = campoFoto.files[0];
+
+  if (!arquivo) {
+    return;
+  }
+
+  mensagemFoto.textContent = "";
+  limparResultados();
+  secaoResultados.hidden = true;
+
+  if (!TIPOS_FOTO.includes(arquivo.type)) {
+    mensagemFoto.textContent = "Envie uma foto em JPG, PNG ou WebP.";
+    campoFoto.value = "";
+    return;
+  }
+
+  if (arquivo.size > TAMANHO_MAXIMO_FOTO) {
+    mensagemFoto.textContent = "A foto é grande demais. Envie uma de até 5 MB.";
+    campoFoto.value = "";
+    return;
+  }
+
+  mensagemFoto.textContent = "Analisando a foto...";
+
+  try {
+    const resposta = await identificarFoto(arquivo);
+
+    if (resposta.residuos.length === 0) {
+      mensagemFoto.textContent =
+        "Não conseguimos identificar o item pela foto. Digite o nome dele na busca acima.";
+      campoBusca.focus();
+      return;
+    }
+
+    mensagemFoto.textContent = `Pela foto, parece ser: ${resposta.categoria}. Confirme abaixo e veja como descartar.`;
+
+    // A orientação de descarte vem sempre do banco (residuo.html), nunca da IA.
+    mostrarResultados(
+      resposta.residuos.map((residuo) => ({
+        ...residuo,
+        categoria: resposta.categoria
+      }))
+    );
+  } catch (erro) {
+    console.error(erro);
+    mensagemFoto.textContent =
+      "Não foi possível analisar a foto agora. Você pode digitar o nome do item na busca acima.";
+  } finally {
+    campoFoto.value = "";
   }
 });
 
