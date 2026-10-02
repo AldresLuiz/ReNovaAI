@@ -91,6 +91,7 @@ Para sobrescrever uma variável só no comando: `PORT=3000 node --env-file=.env 
 
 ## Aprendizados (problemas que já resolvemos)
 
+- **O Nominatim cobre mal os bairros de Caruaru, e pode devolver um lugar errado sem avisar.** Em 02/10, `Indianópolis`, `Petrópolis`, `Universitário` e `Maurício de Nassau` (com `, Caruaru`) deram 404, e `Centro, Caruaru` devolveu uma coordenada a cerca de 70 km. Só `Caruaru` funciona de forma confiável. Veja a tabela em [testes-api.md](testes-api.md#geocodificação-de-bairros-de-caruaru). Não confie num resultado só porque houve `200`: confira se a coordenada cai perto da região esperada.
 - **Ordem no `src/index.js` importa.** `corsMiddleware` vem **antes** de `express.static` e das rotas; `rotaNaoEncontrada` depois de todas as rotas e `erroMiddleware` por último. Um CORS registrado só no arquivo, mas sem `app.use(corsMiddleware)`, não faz nada: já tivemos o item "CORS" marcado como pronto sem estar ligado.
 - **Não logar localização (RNF07).** O logger usa `req.path`, não `req.originalUrl`, para a query string (`lat`/`lng`) não ir para o log.
 - **Nominatim tem limite de uso** (1 requisição por segundo, `User-Agent` identificado). O `/api/geocodificar` guarda buscas repetidas por 10 minutos, espaça as chamadas em 1,1 s e responde `429` se a fila passar de 5 s. Não chame o Nominatim direto do front nem de outro controller.

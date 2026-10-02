@@ -70,7 +70,7 @@ Também verificar:
 - Nenhuma tela chama `fetch` direto, só funções do `api.js`.
 - Funções necessárias: buscar resíduos, pegar resíduo, pegar pontos, geocodificar, todas com tratamento de erro.
 - Em erro, ler `dados.erro` **e** `dados.error`: a autenticação devolve `error`, o contrato pede `erro`. O ideal é padronizar tudo em `erro`.
-- Ao subir a API real: `USAR_MOCK = false` e `API_URL` apontando para o Render.
+- Ao subir a API real: `USAR_MOCK = false`. Como o backend serve o front, `API_URL = ""` (mesma origem). Veja [guia-deploy.md](guia-deploy.md).
 - O formato do mock em `js/mocks.js` precisa continuar igual ao de `docs/contrato-api.md`.
 
 ### 4.2 Modo sem mapa (RNF08)
@@ -79,8 +79,8 @@ Também verificar:
 - O botão de busca por bairro dispara só no clique (o Nominatim aceita no máximo 1 requisição por segundo).
 
 ### 4.3 Deploy e teste ponta a ponta
-- Colocar a URL real do front (Vercel) em `FRONT_URL` no Render; sem isso o CORS bloqueia o navegador.
-- O plano grátis do Render "dorme": abrir o backend antes da demo.
+- `FRONT_URL` só é necessária se o front estiver em **outro** domínio que o da API (aí é a URL desse front, sem barra no final); com o site servido pela API, não precisa.
+- (O Render não é usado; o backend roda em Docker por SSH.)
 - O pool em `databaseService.js` não configura SSL; no Supabase pode ser necessário `ssl: { rejectUnauthorized: false }`.
 - Rodar o checklist da demo do `AGENTS.md` (seção 11) no celular.
 
