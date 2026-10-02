@@ -252,6 +252,103 @@ h1, h2 { line-height: 1.2; margin: 0 0 0.5rem; }
   font-weight: 700;
 }
 
+/* ---------- Localização e pontos de coleta ---------- */
+.bloco-localizacao {
+  margin-bottom: 1rem;
+  padding: 1.25rem;
+  background: #fff;
+  border: 2px solid var(--borda);
+  border-radius: 0.75rem;
+}
+
+.bloco-localizacao h2 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.bloco-localizacao > p:first-of-type {
+  margin: 0 0 1rem;
+}
+
+#usar-localizacao,
+#buscar-por-local,
+#form-local button {
+  width: 100%;
+  min-height: 3.5rem;
+  padding: 0.75rem 1rem;
+  font: inherit;
+  font-weight: 700;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+#usar-localizacao {
+  margin-bottom: 0.75rem;
+  color: #fff;
+  background: var(--folha);
+  border: 2px solid var(--folha);
+}
+
+#usar-localizacao:hover {
+  background: var(--folha-escura);
+  border-color: var(--folha-escura);
+}
+
+#buscar-por-local {
+  color: var(--folha-escura);
+  background: #fff;
+  border: 2px solid var(--folha);
+}
+
+#buscar-por-local:hover {
+  background: #e9f5ee;
+}
+
+#form-local {
+  margin-top: 1.25rem;
+}
+
+#form-local label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 700;
+}
+
+#campo-local {
+  width: 100%;
+  min-height: 3.5rem;
+  margin-bottom: 0.75rem;
+  padding: 0 1rem;
+  font: inherit;
+  color: var(--tinta);
+  background: #fff;
+  border: 2px solid var(--borda);
+  border-radius: 0.5rem;
+}
+
+#campo-local:focus {
+  border-color: var(--folha);
+}
+
+#form-local button {
+  color: var(--tinta);
+  background: var(--destaque);
+  border: 2px solid var(--tinta);
+}
+
+#form-local button:hover {
+  background: #ffe37a;
+}
+
+#mensagem-localizacao {
+  margin: 1rem 0 0;
+  padding: 0.75rem 1rem;
+  background: #e9f5ee;
+  border-left: 4px solid var(--folha);
+  border-radius: 0.25rem;
+  font-weight: 700;
+}
+
 /* ---------- Erros ---------- */
 .mensagem-erro {
   padding: 1rem;
