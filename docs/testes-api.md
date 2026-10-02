@@ -84,7 +84,28 @@ Testada na `main` (commit `02ae708`, depois do PR #27), com `curl -F` e `image` 
 
 **Não testado:** a chamada real à AWS Bedrock (faltam `BEDROCK_MODEL_ID`, região e credenciais no ambiente de teste) e uma foto real de resíduo.
 
-**Ainda diverge do contrato:** o sucesso devolve `{ message, data: { type, recycle } }`, com a **categoria** em `type`, e não os ids de resíduos do banco. Decisão pendente com Aldres e Bernardo.
+### Foto com IA ligada ao banco e ao front (branch `rafael/foto-ia`, 02/10)
+
+A rota agora devolve `{ categoria, residuos: [{ id, nome }] }` (resíduos do banco) e a tela inicial tem o botão de foto. Testes:
+
+**Backend com o banco REAL (Supabase, só leitura) e o Bedrock FALSO**, upload por HTTP:
+
+| A IA responde | Resultado |
+| --- | --- |
+| `Metais`, `metais` | 200, `Metais` e Lata de alumínio (id 1) |
+| `plastico` (sem acento e no singular) | 200, `Plásticos` e Garrafa PET (id 3) |
+| `Pilhas e baterias` cercado de ```json | 200, id 2 |
+| `Papel e papelão`, `Medicamentos`, `lampadas` | 200, ids 4, 9 e 8 |
+| `nao_identificado`, `Madeira` (não existe), `type` vazio, JSON sem `type` | 200, `{ categoria: null, residuos: [] }` |
+| Texto que não é JSON | 500, `{erro}` genérico |
+
+O prompt lista as categorias pelo nome, não tem mais o campo `recycle` nem o exemplo `"plastico"`.
+
+**Front (`index.js` real, com um DOM mínimo falso e `fetch` falso)**: envia `POST` multipart com o campo `image`; mostra o resíduo sugerido com o link `residuo.html?id=2`; sem identificação pede para digitar o nome e leva o foco à busca; erro 500 e falta de rede mostram uma mensagem simples; arquivo que não é imagem e foto de mais de 5 MB são barrados **sem chamar a API**; dados da API entram só por `textContent`.
+
+**Servidor real**: o site servido pelo backend inclui a seção de foto, o `index.js`, o `api.js` e o CSS novos; a rota sem credenciais da AWS devolve 500 `{erro}`, sem imagem 400, e a busca por texto continua funcionando.
+
+**Não testado:** a **AWS Bedrock de verdade** (faltam `BEDROCK_MODEL_ID`, região, credenciais e acesso ao modelo), uma foto real de resíduo (o que o modelo responde depende dele), e a tela **num navegador e num celular** (câmera, tamanho dos botões, foco).
 
 ## Site completo, local (commit `1507b0e`)
 
