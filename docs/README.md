@@ -10,6 +10,7 @@ Comece pelo [AGENTS.md](../AGENTS.md) na raiz (escopo, decisões, regras de neg�
 | [fontes-pontos-coleta.md](fontes-pontos-coleta.md) | Rafael, todos | De onde vem cada ponto de coleta, o que ele aceita e como confirmar |
 | [fontes-orientacoes.md](fontes-orientacoes.md) | Rafael, todos | De onde vem cada orientação de descarte (links, o que foi removido e o que falta conferir) |
 | [testes-banco.md](testes-banco.md) | Rafael, Aldres | Evidências dos testes das funções SQL no Supabase (com imagens) |
+| [testes-api.md](testes-api.md) | Todos | Relatório dos testes da API contra o Supabase real e o que ainda não foi testado |
 | [guia-frontend.md](guia-frontend.md) | Bernardo, Carlos | Telas, mocks, mapa e acessibilidade |
 | [guia-deploy.md](guia-deploy.md) | Aldres | Variáveis de ambiente, Render, Vercel, Supabase |
 | [guia-git.md](guia-git.md) | Todos | Branches, commits e como avisar mudanças |

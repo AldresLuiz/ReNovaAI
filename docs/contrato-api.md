@@ -29,7 +29,7 @@ Usa a função SQL `buscar_residuos`. Ignora acento e caixa, tolera erro de digi
 [{ "id": 3, "nome": "Lata de alumínio", "categoria": "Metais", "similaridade": 0.8 }]
 ```
 
-`q` vazio ou ausente: `400` com `{ "erro": "..." }`.
+`q` vazio, ausente ou com mais de 100 caracteres: `400` com `{ "erro": "..." }`.
 
 ## GET /api/residuos/:id
 
@@ -46,7 +46,7 @@ Usa a função SQL `buscar_residuos`. Ignora acento e caixa, tolera erro de digi
 }
 ```
 
-Id inexistente ou inativo: `404`.
+Id inexistente, inativo ou inválido (texto, zero, negativo, decimal): `404` com `{ "erro": "..." }`.
 
 ## GET /api/residuos/:id/pontos?lat=-8.28&lng=-35.97
 
@@ -65,7 +65,7 @@ Usa `pontos_proximos`. `raio_usado`: `inicial` (10 km) | `ampliado` (25 km) | `m
 }
 ```
 
-`lat`/`lng` ausentes ou inválidos: `400`. O backend **não armazena** a localização (RNF07).
+`lat`/`lng` ausentes ou inválidos (texto, vazio, fora de -90..90 e -180..180): `400` com `{ "erro": "..." }`. Resíduo inexistente, inativo ou com id inválido: `404`. Nenhum ponto aceita o resíduo: `200` com `{ "raio_usado": null, "pontos": [] }`. O backend **não armazena** a localização nem a escreve no log (RNF07).
 
 ## GET /api/geocodificar?q=bairro
 
@@ -73,4 +73,8 @@ Proxy para o Nominatim. Resposta `{ "lat": -8.28, "lng": -35.97 }`. Não encontr
 
 ## POST /api/identificar-foto
 
-Fase 2, só se sobrar tempo. Recebe imagem e devolve resíduos **sugeridos** (ids do banco). A IA só classifica; a orientação vem de `GET /api/residuos/:id`.
+Fase 2, só se sobrar tempo. Recebe imagem (campo `image`, JPG, PNG ou WebP, até 5 MB) e devolve resíduos **sugeridos** (ids do banco). A IA só classifica; a orientação vem de `GET /api/residuos/:id`.
+
+Erros: sem imagem ou formato inválido `400`; foto maior que 5 MB `413`; falha da IA `500`; todos com `{ "erro": "..." }`.
+
+> **A alinhar:** hoje o sucesso devolve `{ "message": "...", "data": { "type": "<categoria>", "recycle": ["...", "...", "..."] } }`, com a **categoria** e não ids de resíduos. Definir com o time se o código ou o contrato muda.

@@ -37,8 +37,11 @@ Configure no painel do Render; **nunca** commite `.env` ou chaves (Supabase serv
 
 ## Aprendizados (problemas que já resolvemos)
 
-- **Aplicar migration não é automático no Supabase.** O Supabase só roda o que alguém colar no SQL Editor, um arquivo por vez, na ordem do número (`02` → `03` → `04` → `05`). Depois de cada deploy do banco, confira as contagens (`pontos_coleta = 14`, `ponto_residuo = 30`) e uma chamada de função.
+- **Aplicar migration não é automático no Supabase.** O Supabase só roda o que alguém colar no SQL Editor, um arquivo por vez, na ordem do número (`02` → `03` → `04` → `05` → `06`). Depois de cada migration, confira o resultado: `pontos_coleta = 14`, `ponto_residuo = 30`, os 9 resíduos com `ativo = true` e uma chamada de função (veja [testes-banco.md](testes-banco.md)).
 - **RLS:** as 6 tabelas do `02` já têm RLS ligado, sem policies. Falta confirmar com o Aldres o RLS na tabela `users` do `init_db.sql` (guarda hash de senha).
-- **Conexão com o Supabase:** o `databaseService.js` não configura SSL. Se a conexão falhar em produção, ajustar o pool (`ssl`) antes de procurar outro problema.
+- **Conexão com o Supabase:** use o **pooler** (`...pooler.supabase.com`, usuário `postgres.<id-do-projeto>`). Num teste local de 02/10, a conexão pelo pooler funcionou **sem SSL** no `databaseService.js`; se falhar no servidor de produção, ajustar o pool (`ssl`) antes de procurar outro problema. A conexão direta (`db.<id>.supabase.co`) costuma ser só IPv6.
+- **Variáveis:** `PORT` é a porta da API e `DB_PORT` é a do Postgres (5432); não misture. Chaves de API do Supabase (`anon`, `service_role`) **não** são usadas pelo backend.
+- **API testada só local.** As rotas de resíduos e pontos foram testadas contra o Supabase real, mas **rodando na máquina de Rafael**. Falta repetir os `curl` de [testes-api.md](testes-api.md) na URL do deploy.
+- **Bedrock isolado:** a consulta ao banco do módulo de foto agora só roda quando a rota `/api/identificar-foto` é usada; um banco fora do ar não impede mais a API de subir (veja [guia-backend.md](guia-backend.md#bedrock-o-que-foi-corrigido-e-o-que-falta-0210)).
 - **Segredos:** o `JWT_SECRET` do `.env.example` é público; gerar outro para produção. Nada de chaves no código nem no front.
 - **Antes da demo:** abrir o backend (plano gratuito dorme) e rodar o checklist de [AGENTS.md](../AGENTS.md#11-checklist-da-demo).

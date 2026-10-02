@@ -18,7 +18,21 @@ const SUPPORTED_FORMATS = {
     "image/gif": "gif"
 };
 
-const WASTE_TYPES = await pool.query("SELECT nome FROM categorias")
+// As categorias vêm do banco, mas só quando a rota de foto é usada (e não ao carregar o módulo):
+// se o banco falhar, só a identificação por foto é afetada, não o resto da API.
+let categoriasEmCache = null
+
+async function carregarCategorias() {
+    if (!categoriasEmCache) {
+        categoriasEmCache = pool.query("SELECT nome FROM categorias ORDER BY id")
+            .then(({ rows }) => rows.map(linha => linha.nome))
+            .catch(erro => {
+                categoriasEmCache = null   // não guarda a falha: a próxima chamada tenta de novo
+                throw erro
+            })
+    }
+    return categoriasEmCache
+}
 
 export async function classifyWasteImage(imageBuffer, mimeType) {
     if (!Buffer.isBuffer(imageBuffer) || imageBuffer.length === 0) {
@@ -36,6 +50,8 @@ export async function classifyWasteImage(imageBuffer, mimeType) {
     }
 
     
+    const categorias = await carregarCategorias();
+
     const command = new ConverseCommand({
         modelId: MODEL_ID,
 
@@ -48,7 +64,7 @@ export async function classifyWasteImage(imageBuffer, mimeType) {
                     Classifique utilizando exclusivamente
                     uma destas categorias:
 
-                    ${WASTE_TYPES.rows.join(", ")}
+                    ${categorias.join(", ")}
 
                     Considere o material predominante
                     do objeto apresentado.

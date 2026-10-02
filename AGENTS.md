@@ -72,6 +72,11 @@ Frontend ──► Leaflet + OpenStreetMap (mapa, sem chave de API)
 - O backend já tem **autenticação** (PR #1 do Aldres: `authController`, JWT, bcrypt, cookies). Ela **não faz parte do fluxo central do MVP**; não exija login nas rotas de resíduos/pontos.
 - O acesso ao banco é via `pg` (`src/services/databaseService.js`), não `supabase.rpc`. Em produção, apontar as variáveis `DB_*` para o Supabase.
 - O `docker-compose` carrega `migrations/` no Postgres **local** em ordem alfabética, só na primeira criação do volume. No Supabase, os arquivos são aplicados à mão no SQL Editor, um por vez, na ordem do número (veja [docs/guia-banco.md](docs/guia-banco.md)).
+- **Estado em 02/10/2026** (detalhes em [docs/testes-banco.md](docs/testes-banco.md) e [docs/testes-api.md](docs/testes-api.md)):
+  - **Banco:** migrations `02` a `06` aplicadas no Supabase. 9 resíduos liberados com fonte ([docs/fontes-orientacoes.md](docs/fontes-orientacoes.md)) e 14 pontos reais de Caruaru, todos `verificado = false` ([docs/fontes-pontos-coleta.md](docs/fontes-pontos-coleta.md)).
+  - **API:** `GET /api/categorias`, `/api/residuos`, `/api/residuos/:id`, `/api/residuos/:id/pontos` e `/api/geocodificar` estão na `main` e foram testadas contra o Supabase real, rodando local. `POST /api/identificar-foto` (Bedrock, fase 2) também está na `main`, com a rota igual ao contrato, erros no formato `{ erro }` e isolada do banco (a API sobe mesmo com o banco fora). Nada disso foi testado no deploy nem com o front.
+  - **Front:** na `main`, `USAR_MOCK = true`; a integração está na branch `api-integration`.
+  - **Pendências:** o sucesso da rota de foto devolve a **categoria** (`type`) e não ids de resíduos como o contrato descreve, e a chamada real à AWS Bedrock nunca foi testada (veja [docs/guia-backend.md](docs/guia-backend.md) e [docs/testes-api.md](docs/testes-api.md)); segunda conferência de remédio e lâmpada em fonte federal; confirmar o coletor de óleo da Compesa.
 
 ## 5. Estrutura de pastas
 
@@ -105,7 +110,7 @@ Os arquivos de `migrations/` são seguros para produção: sem `drop`, em transa
 
 Funções SQL (chamar do backend, **não reimplementar em JS**): `buscar_residuos(q, limite default 8)`, `pontos_proximos(p_residuo, p_lat, p_lng)` (retorna `distancia_km` e `raio_usado`: `inicial` | `ampliado` | `mais_proximo`), `distancia_km(lat1, lng1, lat2, lng2)`.
 
-**Pendências de dados:** o seed (`03_seed_residuos.sql`) **não tem pontos de coleta**; os 10 a 15 reais entram em `05_seed_pontos_reais.sql`, com `verificado = true` só nos confirmados e `ponto_residuo` refletindo o que cada ponto aceita. Os resíduos do seed entram com `ativo = false` e texto `RASCUNHO:`; as orientações **precisam de fonte oficial** (prefeitura, Ministério do Meio Ambiente), sobretudo pilhas, lâmpadas e medicamentos, e só depois são liberadas (`ativo = true`).
+**Dados:** o seed (`03_seed_residuos.sql`) não tem pontos de coleta e entra com os resíduos `ativo = false` e texto `RASCUNHO:`. Os 14 pontos reais de Caruaru entram em `05_seed_pontos_reais.sql`, com `verificado = true` só nos confirmados (hoje nenhum) e `ponto_residuo` refletindo o que cada ponto aceita. Os textos dos 9 resíduos foram corrigidos e liberados (`ativo = true`) em `06_liberar_residuos.sql`, **com fonte registrada**. Resíduo novo ou texto alterado segue o mesmo caminho: fonte oficial, migration nova (nunca editar uma aplicada) e atualização de [docs/fontes-orientacoes.md](docs/fontes-orientacoes.md). Pontos: [docs/fontes-pontos-coleta.md](docs/fontes-pontos-coleta.md).
 
 ## 7. Contrato da API (resumo; detalhes em [docs/contrato-api.md](docs/contrato-api.md))
 
@@ -193,6 +198,7 @@ Pasta `renovaai-front/`: `index.html` (busca e atalhos), `residuo.html` (`?id=8`
 ## 15. Em aberto
 
 - Cargo do Aldres e se "infraestrutura" inclui o deploy do front (assumido que sim).
-- Região exata dos pontos de coleta (mock usa coordenadas fictícias perto de Caruaru-PE).
+- Região dos pontos de coleta: **definida como Caruaru-PE** (14 pontos reais no banco). O `mocks.js` do front ainda usa coordenadas fictícias.
+- Para o time: o `.env` com a conexão do Supabase fica só local, nunca no git; use o **pooler** e o usuário `postgres.<id>` (veja [docs/guia-backend.md](docs/guia-backend.md#testar-a-api)).
 - API Express completa ou só chamadas às funções SQL (hoje o repo segue Express + `pg`).
 - Se sobrar tempo: `POST /api/identificar-foto` com Bedrock.
