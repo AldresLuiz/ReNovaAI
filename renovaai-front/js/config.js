@@ -1,4 +1,3 @@
-export const USAR_MOCK = true;
+export const USAR_MOCK = false;
 
-// Altere para false ao testar a integração com o backend real.
 export const API_URL = "http://localhost:8080";
