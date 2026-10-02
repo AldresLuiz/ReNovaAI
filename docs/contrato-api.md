@@ -15,7 +15,7 @@
 | `GET /api/residuos/:id` | Orientação de descarte |
 | `GET /api/residuos/:id/pontos?lat=..&lng=..` | Pontos próximos |
 | `GET /api/geocodificar?q=bairro` | Bairro/cidade → coordenada |
-| `POST /api/identificar-foto` | Fase 2 (opcional) |
+| `POST /api/identificar-foto` | Foto do resíduo (opcional): a IA diz a categoria, a API devolve os resíduos do banco |
 
 ## GET /api/categorias
 
@@ -73,8 +73,13 @@ Proxy para o Nominatim. Resposta `{ "lat": -8.28, "lng": -35.97 }`. Não encontr
 
 ## POST /api/identificar-foto
 
-Fase 2, só se sobrar tempo. Recebe imagem (campo `image`, JPG, PNG ou WebP, até 5 MB) e devolve resíduos **sugeridos** (ids do banco). A IA só classifica; a orientação vem de `GET /api/residuos/:id`.
+Opcional (fora do caminho crítico). Recebe uma imagem em `multipart/form-data`, campo **`image`** (JPG, PNG ou WebP, até 5 MB). A IA (AWS Bedrock) **só classifica a categoria**; a API traduz essa categoria nos **resíduos ativos do banco**. A orientação de descarte vem sempre de `GET /api/residuos/:id`, nunca da IA.
 
-Erros: sem imagem ou formato inválido `400`; foto maior que 5 MB `413`; falha da IA `500`; todos com `{ "erro": "..." }`.
+```json
+{ "categoria": "Pilhas e baterias", "residuos": [{ "id": 2, "nome": "Pilhas e baterias" }] }
+```
 
-> **A alinhar:** hoje o sucesso devolve `{ "message": "...", "data": { "type": "<categoria>", "recycle": ["...", "...", "..."] } }`, com a **categoria** e não ids de resíduos. Definir com o time se o código ou o contrato muda.
+- Categoria não reconhecida (ou a IA respondeu "nao_identificado"): `200` com `{ "categoria": null, "residuos": [] }`. O front cai para a busca por texto.
+- O nome da categoria é comparado sem acento nem caixa, e com tolerância a pequenas diferenças ("plastico" vale "Plásticos").
+- Erros, todos com `{ "erro": "..." }`: sem imagem, formato inválido ou campo com nome errado `400`; foto maior que 5 MB `413`; falha da IA ou do banco `500`.
+- Se a IA falhar, **o resto da API segue funcionando**.

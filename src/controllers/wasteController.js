@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { classifyWasteImage } from "../services/wasteClassificationService.js";
 import multer from "multer";
+import pool from "../services/databaseService.js";
 
 const router = Router()
 
@@ -64,14 +65,37 @@ router.post(
                 });
             }
 
-            const result = await classifyWasteImage(
+            const { type } = await classifyWasteImage(
                 req.file.buffer,
                 req.file.mimetype
             );
 
+            // A IA só diz a categoria. A orientação de descarte vem sempre do banco:
+            // devolvemos os resíduos ativos dessa categoria (ids que o front abre em residuo.html).
+            // O nome é comparado sem acento nem caixa, e com tolerância a pequenas diferenças
+            // ("plastico" x "Plásticos"). Sem categoria reconhecida: lista vazia, e o front cai
+            // para a busca por texto.
+            const { rows } = await pool.query(
+                `with alvo as (select lower(extensions.unaccent($1::text)) as nome),
+                      escolhida as (
+                          select c.id, c.nome
+                          from categorias c, alvo
+                          where lower(extensions.unaccent(c.nome)) = alvo.nome
+                             or extensions.similarity(lower(extensions.unaccent(c.nome)), alvo.nome) >= 0.5
+                          order by (lower(extensions.unaccent(c.nome)) = alvo.nome) desc,
+                                   extensions.similarity(lower(extensions.unaccent(c.nome)), alvo.nome) desc
+                          limit 1
+                      )
+                 select e.nome as categoria, r.id, r.nome
+                 from escolhida e
+                 join residuos r on r.categoria_id = e.id and r.ativo
+                 order by r.id`,
+                [String(type ?? "").trim()]
+            );
+
             return res.status(200).json({
-                message: "Resíduo identificado com sucesso.",
-                data: result
+                categoria: rows[0]?.categoria ?? null,
+                residuos: rows.map(({ id, nome }) => ({ id, nome }))
             });
 
         } catch (error) {

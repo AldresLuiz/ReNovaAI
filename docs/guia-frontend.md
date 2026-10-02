@@ -28,6 +28,10 @@ Módulos JS não funcionam via `file://`.
 
 `USAR_MOCK = true` usa só `js/mocks.js`. **Na `main` (desde 02/10) está `USAR_MOCK = false` e `API_URL = ""`**: o site é servido pelo próprio backend, então as chamadas vão para a mesma origem (`/api/...`), sem CORS. Para testar local, suba o backend (`node --env-file=.env src/index.js`) e abra `http://localhost:<PORT>`; ele serve o front. Se o front for servido de **outro** domínio, `API_URL` precisa ser a URL do backend (sem barra no final e sem `/api`). **Cuidado:** a Vercel publicou um front antigo, em mock, em 02/10; confira `/js/config.js` no ar depois de cada deploy. As rotas `/api/categorias`, `/api/residuos`, `/api/residuos/:id` e `/api/residuos/:id/pontos` já existem na `main` e foram testadas contra o Supabase real ([testes-api.md](testes-api.md)). Trate `raio_usado: null` (resíduo sem ponto) e lembre que `horario` e `contato` vêm `null` e `verificado` vem `false` nos pontos de hoje (RN05 e RN12). O formato do mock **é** o de [contrato-api.md](contrato-api.md); se um mudar, mude o outro.
 
+## Foto do resíduo (opcional)
+
+Na tela inicial, a seção **"Não sabe o nome? Envie uma foto"** tem o botão "Tirar ou escolher foto" (`<input type="file" accept="image/jpeg,image/png,image/webp">`, escondido só visualmente, com o foco aparecendo no botão). Ao escolher a imagem, `index.js` valida tipo e tamanho (até 5 MB), chama `identificarFoto` (`api.js`, `POST /api/identificar-foto`, campo `image`) e mostra os resíduos sugeridos no mesmo bloco de resultados da busca, com o link "Ver como descartar" (`residuo.html?id=`). A orientação vem sempre do banco. Se a IA não reconhecer ou falhar, aparece uma mensagem simples pedindo para digitar o nome, e a busca por texto continua funcionando. Com `USAR_MOCK = true` a foto devolve lista vazia.
+
 ## Regras de código
 
 - As telas **nunca** usam `fetch` direto; só funções de `api.js`.

@@ -36,6 +36,28 @@
       </form>
     </section>
 
+    <!-- Foto (opcional): ajuda a descobrir o tipo do item; a orientação vem sempre do banco -->
+    <section class="foto-secao" aria-labelledby="titulo-foto">
+      <h2 id="titulo-foto">Não sabe o nome? Envie uma foto</h2>
+      <p>A foto só ajuda a descobrir o tipo do item. As instruções de descarte vêm sempre do nosso banco de dados.</p>
+
+      <div class="foto-campo">
+        <input
+          id="foto"
+          name="foto"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          class="so-leitor"
+        >
+        <label for="foto" class="botao-foto">
+          <span aria-hidden="true">📷</span>
+          Tirar ou escolher foto
+        </label>
+      </div>
+
+      <p id="mensagem-foto" role="status" aria-live="polite"></p>
+    </section>
+
     <section
       class="resultados-secao"
       id="resultados"

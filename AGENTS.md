@@ -33,7 +33,7 @@ A divisão de infraestrutura (AWS/deploy com o Aldres; CORS/integração com o C
 
 **Importante:** botão "Como chegar" (abre a rota no app de mapas); busca por localização manual (bairro ou cidade).
 
-**Fora do MVP (só slide de evolução):** painel administrativo completo (dados entram por seed), filtros avançados, feedback dos usuários, **identificação do resíduo por foto com IA**.
+**Fora do MVP (só slide de evolução):** painel administrativo completo (dados entram por seed), filtros avançados, feedback dos usuários, **identificação do resíduo por foto com IA** (implementada como extra opcional, fora do caminho crítico; veja a seção 4).
 
 **IA não entra no caminho crítico.** A foto com IA (AWS Bedrock) é opcional, em rota própria; se falhar, o fluxo principal segue. A IA só **classifica** o resíduo; a orientação de descarte **sempre vem do banco**, nunca da IA.
 
@@ -75,7 +75,7 @@ Frontend ──► Leaflet + OpenStreetMap (mapa, sem chave de API)
   - **Banco:** migrations `02` a `06` aplicadas no Supabase. 9 resíduos liberados com fonte ([docs/fontes-orientacoes.md](docs/fontes-orientacoes.md)) e 14 pontos reais de Caruaru, todos `verificado = false` ([docs/fontes-pontos-coleta.md](docs/fontes-pontos-coleta.md)).
   - **API:** `GET /api/categorias`, `/api/residuos`, `/api/residuos/:id`, `/api/residuos/:id/pontos` e `/api/geocodificar` estão na `main` e foram testadas contra o Supabase real, rodando local. `POST /api/identificar-foto` (Bedrock, fase 2) também está na `main`, com a rota igual ao contrato, erros no formato `{ erro }` e isolada do banco (a API sobe mesmo com o banco fora). Testada também no domínio da Vercel (a API no ar responde certo, com o código mais recente); o site completo ainda não foi testado num celular.
   - **Front:** a integração com a API (busca, orientação, localização, mapa e pontos) está na `main` desde 02/10, com `USAR_MOCK = false` e `API_URL = ""` (mesma origem). **Hospedagem:** o site é servido pelo próprio backend (Aldres), com deploy **manual** (workflow `Deploy`, SSH + `docker compose`). Em 02/10, `renovaai-demo.vercel.app` servia o front **antigo, em mock**, embora a API respondesse certo por esse domínio: definir um link oficial da demo (veja [docs/guia-deploy.md](docs/guia-deploy.md)).
-  - **Pendências:** o sucesso da rota de foto devolve a **categoria** (`type`) e não ids de resíduos como o contrato descreve, e a chamada real à AWS Bedrock nunca foi testada (veja [docs/guia-backend.md](docs/guia-backend.md) e [docs/testes-api.md](docs/testes-api.md)); segunda conferência de remédio e lâmpada em fonte federal; confirmar o coletor de óleo da Compesa.
+  - **Foto com IA (extra opcional, fora do caminho crítico):** a rota devolve os **resíduos do banco** da categoria que a IA identifica (`{ categoria, residuos: [{ id, nome }] }`), e a tela inicial tem o botão "Tirar ou escolher foto". **Pendência:** a chamada real à AWS Bedrock nunca foi testada com uma foto de verdade (veja [docs/guia-backend.md](docs/guia-backend.md) e [docs/testes-api.md](docs/testes-api.md)); segunda conferência de remédio e lâmpada em fonte federal; confirmar o coletor de óleo da Compesa.
 
 ## 5. Estrutura de pastas
 
@@ -122,7 +122,7 @@ Erros: status HTTP correto e `{ "erro": "mensagem em português simples" }`. Bus
 | `GET /api/residuos/:id` | Orientação de descarte |
 | `GET /api/residuos/:id/pontos?lat=..&lng=..` | Pontos próximos que aceitam o resíduo |
 | `GET /api/geocodificar?q=bairro` | Bairro/cidade → `{ lat, lng }` |
-| `POST /api/identificar-foto` | Fase 2, só se sobrar tempo |
+| `POST /api/identificar-foto` | Foto (opcional): categoria pela IA, resíduos pelo banco |
 
 ## 8. Frontend
 

@@ -104,6 +104,51 @@ h1, h2 { line-height: 1.2; margin: 0 0 0.5rem; }
 /* No fundo verde, o foco precisa ser claro */
 .busca :focus-visible { outline-color: #fff; }
 
+/* ---------- Foto (opcional) ---------- */
+.foto-secao {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 0;
+}
+
+.foto-secao h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.foto-secao p {
+  margin: 0 0 1rem;
+}
+
+.foto-campo { display: block; }
+
+.botao-foto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3.5rem; /* área de clique grande */
+  padding: 0.75rem 1.5rem;
+  font-weight: 700;
+  color: var(--tinta);
+  background: #fff;
+  border: 2px solid var(--folha);
+  border-radius: 0.75rem;
+  cursor: pointer;
+}
+
+.botao-foto:hover {
+  background: #e9f5ee;
+}
+
+/* O campo de arquivo fica escondido, mas focável: o foco aparece no botão */
+.foto-campo input:focus-visible + .botao-foto {
+  outline: 4px solid var(--tinta);
+  outline-offset: 3px;
+}
+
+#mensagem-foto { font-weight: 700; }
+
 /* ---------- Resultados da busca ---------- */
 .resultados-secao {
   max-width: 60rem;
